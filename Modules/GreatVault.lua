@@ -60,11 +60,16 @@ MR:RegisterModule({
                 end
             elseif act.type == 3 then
 
-                vd["vault_r_progress"] = act.progress or 0
-                local newRank = DIFF_RANK[act.difficultyId] or 2
-                local curRank = DIFF_RANK[vd["vault_r_diff_id"]] or 2
-                if newRank > curRank then
-                    vd["vault_r_diff_id"] = act.difficultyId
+                local progress = act.progress or 0
+                if progress > vd["vault_r_progress"] then
+                    vd["vault_r_progress"] = progress
+                end
+                local newRank = DIFF_RANK[act.difficultyId]
+                if newRank then
+                    local curRank = DIFF_RANK[vd["vault_r_diff_id"]] or 0
+                    if newRank > curRank then
+                        vd["vault_r_diff_id"] = act.difficultyId
+                    end
                 end
             elseif act.type == 4 then
 
