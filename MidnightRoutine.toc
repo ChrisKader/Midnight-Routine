@@ -2,7 +2,7 @@
 ## Title: |cff2ae7c6Midnight|r Routine
 ## Notes: Auto-tracking quest log style todo list for Midnight
 ## Author: Azro
-## Version: 1.0.0
+## Version: @project-version@
 ## SavedVariables: MidnightRoutineDB
 ## OptionalDeps: Blizzard_Professions
 ## IconTexture: Interface\AddOns\MidnightRoutine\Media\Icon
