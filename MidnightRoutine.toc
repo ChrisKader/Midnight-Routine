@@ -36,3 +36,4 @@ Modules/LFR.lua
 
 UI.lua
 MinimapButton.lua
+

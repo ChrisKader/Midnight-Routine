@@ -1,9 +1,9 @@
+local cfgFrame
+
 local PANEL_MIN_WIDTH = 200
 local PANEL_MAX_WIDTH = 500
 local FONT_ROWS       = "Fonts\\FRIZQT__.TTF"
 local FONT_HEADERS    = "Fonts\\FRIZQT__.TTF"
-local TEX_GEAR        = "Interface\\GossipFrame\\DailyActiveQuestIcon"
-local TEX_LOCK        = "Interface\\PaperDollInfoFrame\\UI-GearManager-LeatherLoop"
 
 local FONT_SIZE_MIN = 7
 local FONT_SIZE_MAX = 20
@@ -153,6 +153,9 @@ local function CommitSectionDrop()
     table.insert(order, insertAt + 1, modKey)
     MR:SetModuleOrder(order)
     MR:RefreshUI()
+    if cfgFrame and cfgFrame:IsShown() then
+        MR:PopulateConfigFrame(cfgFrame)
+    end
 end
 
 local function StopDrag()
@@ -598,16 +601,18 @@ function MR:BuildSection(mod, yOff)
     if allDone then
         accent:SetColorTexture(COL.complete[1], COL.complete[2], COL.complete[3], 1)
     else
-        local lr,lg,lb = hex(mod.labelColor or "#ffffff")
+        local customColor = MR:GetHeaderColor(mod.key)
+        local lr,lg,lb = hex(customColor or mod.labelColor or "#ffffff")
         accent:SetColorTexture(lr, lg, lb, 1)
     end
 
     local lbl = hdrFrame:CreateFontString(nil, "OVERLAY")
     lbl:SetFont(FONT_HEADERS, GetFontSize(), "OUTLINE")
     lbl:SetPoint("LEFT", hdrFrame, "LEFT", 8, 0)
+    local customColor = MR:GetHeaderColor(mod.key)
     lbl:SetText(allDone
         and WC("00ff96", mod.label)
-        or  WC((mod.labelColor or "#ffffff"):gsub("#",""), mod.label))
+        or  WC((customColor or mod.labelColor or "#ffffff"):gsub("#",""), mod.label))
 
     local cnt = hdrFrame:CreateFontString(nil, "OVERLAY")
     cnt:SetFont(FONT_ROWS, math.max(7, GetFontSize() - 2), "OUTLINE")
@@ -831,8 +836,6 @@ function MR:BuildRow(mod, row, done, yOff, collapsed)
     table.insert(self.widgets, rowFrame)
     return yOff + rowH
 end
-
-local cfgFrame
 
 function MR:ToggleConfig()
     if cfgFrame and cfgFrame:IsShown() then cfgFrame:Hide() return end
@@ -1206,7 +1209,66 @@ function MR:PopulateConfigFrame(f)
         return btn
     end
 
-    for _, mod in ipairs(self.modules) do
+    local function BuildColorSwatch(parent, key, mod, anchorRight)
+        local swatch = CreateFrame("Button", nil, parent, "BackdropTemplate")
+        swatch:SetSize(16, 16)
+        swatch:SetPoint("RIGHT", anchorRight, "LEFT", -2, 0)
+        swatch:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1 })
+        
+        local currentColor = MR:GetHeaderColor(key)
+        local r, g, b = hex(currentColor or mod.labelColor or "#ffffff")
+        swatch:SetBackdropColor(r, g, b, 1)
+        swatch:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
+        
+        swatch:SetScript("OnClick", function(self, button)
+            if button == "LeftButton" then
+                local function OnColorChanged(restore)
+                    local newR, newG, newB
+                    if restore then
+                        newR, newG, newB = restore.r, restore.g, restore.b
+                    else
+                        newR, newG, newB = ColorPickerFrame:GetColorRGB()
+                    end
+                    local hexColor = string.format("#%02x%02x%02x", newR * 255, newG * 255, newB * 255)
+                    MR:SetHeaderColor(key, hexColor)
+                    swatch:SetBackdropColor(newR, newG, newB, 1)
+                end
+                
+                ColorPickerFrame:SetupColorPickerAndShow({
+                    r = r,
+                    g = g,
+                    b = b,
+                    hasOpacity = false,
+                    swatchFunc = OnColorChanged,
+                    cancelFunc = OnColorChanged,
+                })
+            elseif button == "RightButton" then
+                MR:ResetHeaderColor(key)
+                local defaultColor = mod.labelColor or "#ffffff"
+                local dr, dg, db = hex(defaultColor)
+                swatch:SetBackdropColor(dr, dg, db, 1)
+                MR:PopulateConfigFrame(f)
+            end
+        end)
+        
+        swatch:SetScript("OnEnter", function()
+            swatch:SetBackdropBorderColor(0.8, 0.8, 0.8, 1)
+            GameTooltip:SetOwner(swatch, "ANCHOR_RIGHT")
+            GameTooltip:SetText("Header Color", 1, 1, 1)
+            GameTooltip:AddLine("Left-click: Pick color", 0.5, 0.5, 0.5)
+            GameTooltip:AddLine("Right-click: Reset to default", 0.5, 0.5, 0.5)
+            GameTooltip:Show()
+        end)
+        
+        swatch:SetScript("OnLeave", function()
+            swatch:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
+            GameTooltip:Hide()
+        end)
+        
+        return swatch
+    end
+
+    for _, mod in ipairs(MR:GetOrderedModules()) do
         local key = mod.key
         local optVisible = not mod.isVisible or mod:isVisible()
 
@@ -1226,14 +1288,20 @@ function MR:PopulateConfigFrame(f)
                 end)
 
                 local hideBtn = BuildHideCompleteBtn(headerFr, key, headerFr)
+                local colorSwatch = BuildColorSwatch(headerFr, key, mod, hideBtn)
 
                 local lbl = headerFr:CreateFontString(nil, "OVERLAY")
                 lbl:SetFont(FONT_ROWS, 10, "OUTLINE")
                 lbl:SetPoint("LEFT", cb, "RIGHT", 2, 0)
-                lbl:SetPoint("RIGHT", hideBtn, "LEFT", -2, 0)
+                lbl:SetPoint("RIGHT", colorSwatch, "LEFT", -2, 0)
                 lbl:SetText(mod.label)
                 lbl:SetJustifyH("LEFT")
-                if mod.labelColor then lbl:SetTextColor(hex(mod.labelColor)) else lbl:SetTextColor(0.88, 0.88, 0.88) end
+                local customColor = MR:GetHeaderColor(key)
+                if customColor or mod.labelColor then
+                    lbl:SetTextColor(hex(customColor or mod.labelColor))
+                else
+                    lbl:SetTextColor(0.88, 0.88, 0.88)
+                end
 
                 yOff = yOff - ROW_H
             end
@@ -1251,14 +1319,6 @@ function MR:PopulateConfigFrame(f)
             cb:SetScript("OnClick", function(s)
                 MR:SetModuleEnabled(key, s:GetChecked())
             end)
-
-            local lbl = headerFr:CreateFontString(nil, "OVERLAY")
-            lbl:SetFont(FONT_ROWS, 10, "OUTLINE")
-            lbl:SetPoint("LEFT", cb, "RIGHT", 2, 0)
-            lbl:SetPoint("RIGHT", headerFr, "RIGHT", -40, 0)
-            lbl:SetText(mod.label)
-            lbl:SetJustifyH("LEFT")
-            if mod.labelColor then lbl:SetTextColor(hex(mod.labelColor)) else lbl:SetTextColor(0.88, 0.88, 0.88) end
 
             local isExp = MR._cfgExpanded[key]
             local arrowBtn = CreateFrame("Button", nil, headerFr, "BackdropTemplate")
@@ -1291,7 +1351,21 @@ function MR:PopulateConfigFrame(f)
                 GameTooltip:Hide()
             end)
 
-            BuildHideCompleteBtn(headerFr, key, arrowBtn)
+            local hideBtn = BuildHideCompleteBtn(headerFr, key, arrowBtn)
+            local colorSwatch = BuildColorSwatch(headerFr, key, mod, hideBtn)
+
+            local lbl = headerFr:CreateFontString(nil, "OVERLAY")
+            lbl:SetFont(FONT_ROWS, 10, "OUTLINE")
+            lbl:SetPoint("LEFT", cb, "RIGHT", 2, 0)
+            lbl:SetPoint("RIGHT", colorSwatch, "LEFT", -2, 0)
+            lbl:SetText(mod.label)
+            lbl:SetJustifyH("LEFT")
+            local customColor = MR:GetHeaderColor(key)
+            if customColor or mod.labelColor then
+                lbl:SetTextColor(hex(customColor or mod.labelColor))
+            else
+                lbl:SetTextColor(0.88, 0.88, 0.88)
+            end
 
             yOff = yOff - ROW_H
 
@@ -1313,8 +1387,9 @@ function MR:PopulateConfigFrame(f)
                     local rdot = rowFr:CreateTexture(nil, "ARTWORK")
                     rdot:SetSize(5, 5)
                     rdot:SetPoint("LEFT", rowFr, "LEFT", 0, 0)
-                    if mod.labelColor then
-                        rdot:SetColorTexture(hex(mod.labelColor))
+                    local customColor = MR:GetHeaderColor(key)
+                    if customColor or mod.labelColor then
+                        rdot:SetColorTexture(hex(customColor or mod.labelColor))
                     else
                         rdot:SetColorTexture(0.4, 0.4, 0.4, 1)
                     end
@@ -1386,13 +1461,15 @@ function MR:PopulateConfigFrame(f)
 
     Gap(4); Divider()
     SectionLabel("RESETS")
-    Btn("Simulate Weekly Reset", function()
-        MR:DoWeeklyReset()
-        MR:PopulateConfigFrame(f)
-    end)
     Btn("Reset Everything", function()
         MR.db.char.progress = {}
+        MR.db.profile.headerColors = {}
         MR:Scan()
+        MR:PopulateConfigFrame(f)
+    end)
+    Btn("Reset All Colors", function()
+        MR.db.profile.headerColors = {}
+        MR:RefreshUI()
         MR:PopulateConfigFrame(f)
     end)
     Btn("Reset Section Order", function()

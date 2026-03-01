@@ -20,6 +20,7 @@ local DEFAULTS = {
         modules         = {},
         moduleOrder     = {},
         position        = { point = "CENTER", x = 0, y = 0 },
+        headerColors    = {}, 
     },
     char = {
         progress = {},
@@ -133,6 +134,29 @@ function MR:SetRowEnabled(modKey, rowKey, enabled)
         self.db.profile.modules[modKey].hiddenRows = {}
     end
     self.db.profile.modules[modKey].hiddenRows[rowKey] = enabled and true or false
+end
+
+function MR:GetHeaderColor(modKey)
+    if self.db.profile.headerColors and self.db.profile.headerColors[modKey] then
+        return self.db.profile.headerColors[modKey]
+    end
+    local mod = self.moduleByKey[modKey]
+    return mod and mod.labelColor or "#ffffff"
+end
+
+function MR:SetHeaderColor(modKey, hexColor)
+    if not self.db.profile.headerColors then
+        self.db.profile.headerColors = {}
+    end
+    self.db.profile.headerColors[modKey] = hexColor
+    self:RefreshUI()
+end
+
+function MR:ResetHeaderColor(modKey)
+    if self.db.profile.headerColors then
+        self.db.profile.headerColors[modKey] = nil
+    end
+    self:RefreshUI()
 end
 
 local PARENT_TO_MIDNIGHT = {
