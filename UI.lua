@@ -1,7 +1,9 @@
 local cfgFrame
 
-local PANEL_MIN_WIDTH = 200
-local PANEL_MAX_WIDTH = 500
+local PANEL_MIN_WIDTH  = 200
+local PANEL_MAX_WIDTH  = 500
+local PANEL_MIN_HEIGHT = 100
+local PANEL_MAX_HEIGHT = 800
 local FONT_ROWS    = MR_FONT_ROWS
 local FONT_HEADERS = MR_FONT_HEADERS
 
@@ -53,6 +55,14 @@ local function ApplyWidth(newW)
 end
 MR.ApplyWidth = ApplyWidth
 
+local function ApplyHeight(newH)
+    newH = math.max(PANEL_MIN_HEIGHT, math.min(PANEL_MAX_HEIGHT, math.floor(newH)))
+    MR.db.profile.height = newH
+    if MR.frame then MR.frame:SetHeight(newH) end
+    MR:RefreshUI()
+end
+MR.ApplyHeight = ApplyHeight
+
 local function ApplyFontSize(newSize)
     newSize = math.max(FONT_SIZE_MIN, math.min(FONT_SIZE_MAX, math.floor(newSize)))
     MR.db.profile.fontSize = newSize
@@ -70,10 +80,11 @@ function MR:BuildUI()
 
     RecalcLayout()
     local w = MR.db.profile.width or 260
+    local h = MR.db.profile.height or 400
 
     local f = CreateFrame("Frame", "MidnightRoutineFrame", UIParent, "BackdropTemplate")
     f:SetWidth(w)
-    f:SetHeight(40)
+    f:SetHeight(h)
     f:SetFrameStrata("MEDIUM")
     f:SetBackdrop({
         bgFile   = "Interface\\Buttons\\WHITE8X8",
@@ -249,11 +260,13 @@ function MR:BuildUI()
             if MR.scroll       then MR.scroll:Hide()       end
             if MR._scrollBg    then MR._scrollBg:Hide()    end
             if MR._scrollTrack then MR._scrollTrack:Hide() end
+            if MR._dragger     then MR._dragger:Hide()     end
             f:SetHeight(HEADER_H)
         else
             if MR.scroll       then MR.scroll:Show()       end
             if MR._scrollBg    then MR._scrollBg:Show()    end
             if MR._scrollTrack then MR._scrollTrack:Show() end
+            if MR._dragger     then MR._dragger:Show()     end
             MR:RefreshUI()
         end
         UpdateMinimizeVisual()
@@ -372,6 +385,66 @@ function MR:BuildUI()
     self.widgets         = {}
     self.sectionRegistry = {}
 
+    -- Resize dragger (bottom-right corner)
+    local dragger = CreateFrame("Frame", nil, f)
+    dragger:SetSize(12, 12)
+    dragger:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -1, 1)
+    dragger:SetFrameLevel(f:GetFrameLevel() + 10)
+    dragger:EnableMouse(true)
+
+    local dTex = dragger:CreateTexture(nil, "OVERLAY")
+    dTex:SetAllPoints()
+    dTex:SetTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
+
+    dragger:SetScript("OnEnter", function()
+        if not MR.db.profile.locked then
+            dTex:SetTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
+        end
+    end)
+    dragger:SetScript("OnLeave", function()
+        dTex:SetTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
+    end)
+
+    local dragStartW, dragStartH, dragStartX, dragStartY
+    dragger:SetScript("OnMouseDown", function(_, button)
+        if button == "LeftButton" and not MR.db.profile.locked then
+            dragStartW = f:GetWidth()
+            dragStartH = f:GetHeight()
+            dragStartX, dragStartY = GetCursorPosition()
+            local scale = f:GetEffectiveScale()
+            dragStartX = dragStartX / scale
+            dragStartY = dragStartY / scale
+            dragger._dragging = true
+        end
+    end)
+    dragger:SetScript("OnMouseUp", function(_, button)
+        if button == "LeftButton" and dragger._dragging then
+            dragger._dragging = false
+            local newW = math.max(PANEL_MIN_WIDTH, math.min(PANEL_MAX_WIDTH, math.floor(f:GetWidth())))
+            local newH = math.max(PANEL_MIN_HEIGHT, math.min(PANEL_MAX_HEIGHT, math.floor(f:GetHeight())))
+            MR.db.profile.width  = newW
+            MR.db.profile.height = newH
+            f:SetWidth(newW)
+            f:SetHeight(newH)
+            MR:RefreshUI()
+            if cfgFrame and cfgFrame:IsShown() then MR:PopulateConfigFrame(cfgFrame) end
+        end
+    end)
+    dragger:SetScript("OnUpdate", function()
+        if not dragger._dragging then return end
+        local cx, cy = GetCursorPosition()
+        local scale = f:GetEffectiveScale()
+        cx = cx / scale
+        cy = cy / scale
+        local dx = cx - dragStartX
+        local dy = dragStartY - cy
+        local newW = math.max(PANEL_MIN_WIDTH, math.min(PANEL_MAX_WIDTH, dragStartW + dx))
+        local newH = math.max(PANEL_MIN_HEIGHT, math.min(PANEL_MAX_HEIGHT, dragStartH + dy))
+        f:SetWidth(newW)
+        f:SetHeight(newH)
+    end)
+    self._dragger = dragger
+
     self:RefreshUI()
     ApplyTheme()
 end
@@ -452,7 +525,8 @@ function MR:RefreshUI()
     self.content:SetWidth(usableW)
 
     self.content:SetHeight(math.max(totalH, 1))
-    self.frame:SetHeight(math.max(math.min(24 + totalH + 6, 600), 30))
+    local userH = MR.db.profile.height or 400
+    self.frame:SetHeight(math.max(PANEL_MIN_HEIGHT, math.min(userH, PANEL_MAX_HEIGHT)))
 
     if self.scroll then
         local maxScroll = math.max(math.max(totalH, 1) - self.scroll:GetHeight(), 0)
@@ -468,8 +542,11 @@ function MR:RefreshUI()
         if self.scroll       then self.scroll:Hide()       end
         if self._scrollBg    then self._scrollBg:Hide()    end
         if self._scrollTrack then self._scrollTrack:Hide() end
+        if self._dragger     then self._dragger:Hide()     end
         self.frame:SetHeight(24)
         if self.UpdateMinimizeVisual then self.UpdateMinimizeVisual() end
+    else
+        if self._dragger then self._dragger:Show() end
     end
 end
 
@@ -848,6 +925,12 @@ function MR:PopulateConfigFrame(f)
         function() return MR.db.profile.width or 260 end,
         function(v) ApplyWidth(v); MR:PopulateConfigFrame(f) end,
         0.16, 0.78, 0.75, 8)
+
+    Gap(6)
+    yOff = MR_OptionsSlider(body, yOff, "HEIGHT", PANEL_MIN_HEIGHT, PANEL_MAX_HEIGHT, 10,
+        function() return MR.db.profile.height or 400 end,
+        function(v) ApplyHeight(v); MR:PopulateConfigFrame(f) end,
+        0.16, 0.75, 0.78, 8)
 
     Gap(6)
     yOff = MR_OptionsSlider(body, yOff, "FONT SIZE", FONT_SIZE_MIN, FONT_SIZE_MAX, 1,

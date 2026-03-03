@@ -14,6 +14,7 @@ local DEFAULTS = {
         hideComplete    = true,
         transparentMode = false,
         width           = 260,
+        height          = 400,
         fontSize        = 11,
         panelOpen       = true,
         minimap         = { hide = false },
