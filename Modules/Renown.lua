@@ -265,7 +265,7 @@ local function BuildRenownFrame()
 end
 
 local function RefreshRenownFrame()
-    if not renownFrame then return end
+    if not renownFrame or not renownFrame:IsShown() then return end
     local db         = MR.db and MR.db.profile or {}
     local showRep    = db.renownShowRep ~= false
     local hideMaxed  = db.renownHideMaxed

@@ -309,6 +309,8 @@ function MR:Scan()
     end
 
     if dirty then self:RefreshUI() end
+    if self.RefreshRares  then self:RefreshRares()  end
+    if self.RefreshRenown then self:RefreshRenown() end
 end
 
 function MR:GetCurrentWeekKey()

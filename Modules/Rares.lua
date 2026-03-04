@@ -653,7 +653,7 @@ BuildRaresFrame = function()
 end
 
 RefreshRaresFrame = function()
-    if not raresFrame then return end
+    if not raresFrame or not raresFrame:IsShown() then return end
 
     local grandDone  = 0
     local grandTotal = 0
