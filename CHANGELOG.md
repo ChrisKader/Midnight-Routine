@@ -1,5 +1,27 @@
 # Midnight Routine
 
+## [v12.0.14](https://github.com/LoyalFTW/Midnight-Routine/tree/v12.0.14) (2026-03-05)
+[Full Changelog](https://github.com/LoyalFTW/Midnight-Routine/compare/v12.0.13...v12.0.14) [Previous Releases](https://github.com/LoyalFTW/Midnight-Routine/releases)
+
+### Added
+- **New Gathering Locations window** — standalone frame for profession location tracking with its own title bar, collapse button, settings button, scroll area, and resize handle
+- **Profession-aware display** — Gathering Locations only shows professions learned by the current character
+- **Gathering options panel** — full settings panel with lock position, width/height/font/background/scale controls, and profession color customization
+- **Click-to-waypoint support** — clicking a gathering row sets a waypoint; uses TomTom when available and falls back to Blizzard waypoints when TomTom is not installed
+
+### Changed
+- **Gathering list readability improved** — rows are now laid out as aligned name + coordinate columns for easier scanning
+- **Prey tracking expanded by difficulty** — Prey now tracks Normal, Hard, and Nightmare in separate rows
+- **Prey caps updated** — difficulty rows now track as 4/4/4 weekly (Normal/Hard/Nightmare), and the old combined Weekly Prey row was removed
+
+### Fixed
+- **Gathering frame content not rendering until interaction** — frame now refreshes correctly when profession data becomes available, without needing color changes or frame movement
+- **Gathering collapse state mismatch** — collapse icon/state and saved minimized state are now synchronized correctly
+- **Gathering drag-resize behavior** — resize now commits and rebuilds like the Rares frame, including config refresh when open
+- **Gathering options panel footer gap** — removed extra empty space under "Reset All Colors"
+
+---
+
 ## [v12.0.13](https://github.com/LoyalFTW/Midnight-Routine/tree/v12.0.13) (2026-03-04)
 [Full Changelog](https://github.com/LoyalFTW/Midnight-Routine/compare/v12.0.12...v12.0.13) [Previous Releases](https://github.com/LoyalFTW/Midnight-Routine/releases)
 

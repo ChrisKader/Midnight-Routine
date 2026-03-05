@@ -52,6 +52,17 @@ local DEFAULTS = {
         renownCompact        = false,
         renownScale          = 1.0,
         renownShowLevel      = true,
+        gatheringLocOpen     = false,
+        gatheringLocPos      = nil,
+        gatheringLocked      = false,
+        gatheringWidth       = 350,
+        gatheringHeight      = 450,
+        gatheringMinimized   = false,
+        gatheringAlpha       = 1.0,
+        gatheringFontSize    = 9,
+        gatheringScale       = 1.0,
+        gatheringProfColors  = {},
+            gatheringHideCompleted = false,
         headerColors    = {},
     },
     char = {
@@ -404,10 +415,16 @@ function MR:OnEnteringWorld()
     if self.db.profile.raresOpen and self.EnsureRaresShown then
         self:ScheduleTimer(function() self:EnsureRaresShown() end, 1.7)
     end
+    if self.db.profile.gatheringLocOpen and self.EnsureGatheringLocationsShown then
+        self:ScheduleTimer(function() self:EnsureGatheringLocationsShown() end, 1.9)
+    end
     self:ScheduleTimer(function()
         self:CheckWeeklyReset()
         self:RefreshPlayerProfessions()
         self:RefreshUI()
+        if self.RefreshGatheringLocationsFrame then
+            self:RefreshGatheringLocationsFrame()
+        end
     end, 0.5)
     self:ScheduleTimer(function() self:Scan() end, 5)
     self:Scan()
@@ -416,6 +433,9 @@ end
 function MR:OnProfessionChange()
     self:RefreshPlayerProfessions()
     self:RefreshUI()
+    if self.RefreshGatheringLocationsFrame then
+        self:RefreshGatheringLocationsFrame()
+    end
 end
 
 function MR:OnSpellCast(_, unit, _, spellID)
@@ -479,7 +499,8 @@ SlashCmdList["MIDROUTE"] = function(msg)
     elseif msg == "renown config" then MR:ToggleRenownConfig()
     elseif msg == "rares"   then MR:ToggleRares()
     elseif msg == "rares config" then MR:ToggleRaresConfig()
+    elseif msg == "gathering" then MR:ToggleGatheringLocations()
     else
-        print("|cff2ae7c6/mr|r commands: show, hide, lock, unlock, reset, minimap, scale <0.5-2>, big, small, welcome, renown")
+        print("|cff2ae7c6/mr|r commands: show, hide, lock, unlock, reset, minimap, scale <0.5-2>, big, small, welcome, renown, rares, gathering")
     end
 end

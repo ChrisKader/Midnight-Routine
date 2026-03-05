@@ -35,6 +35,7 @@ Modules/StoryCampaign.lua
 Modules/WorldEvents.lua
 Modules/Renown.lua
 Modules/Rares.lua
+Modules/GatheringLocations.lua
 
 UI.lua
 WelcomeScreen.lua

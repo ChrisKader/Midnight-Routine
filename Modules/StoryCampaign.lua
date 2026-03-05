@@ -49,7 +49,7 @@ local function TryRegisterCampaigns()
                     local mapId    = info and info.uiMapID
                     local mapInfo  = mapId and C_Map.GetMapInfo and C_Map.GetMapInfo(mapId)
                     local zoneName = mapInfo and mapInfo.name
-                    local label    = zoneName and ("Story: " .. zoneName .. " \xe2\x80\x94 " .. name) or ("Story: " .. name)
+                    local label    = zoneName and ("Story: " .. zoneName .. " \226\128\148 " .. name) or ("Story: " .. name)
                     local rows     = {}
                     for _, chapterId in ipairs(chapterIds) do
                         local ch          = C_CampaignInfo.GetCampaignChapterInfo and C_CampaignInfo.GetCampaignChapterInfo(chapterId)

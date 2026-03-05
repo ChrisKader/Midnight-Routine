@@ -1,5 +1,35 @@
 local PREY_COLOR = "|cffcc2244"
 
+local function BuildPreyNormalQuestIds()
+    local ids = {}
+    for qid = 91095, 91124 do
+        ids[#ids + 1] = qid
+    end
+    return ids
+end
+
+local function BuildPreyHardQuestIds()
+    local ids = {}
+    for qid = 91210, 91242, 2 do
+        ids[#ids + 1] = qid
+    end
+    for qid = 91243, 91255 do
+        ids[#ids + 1] = qid
+    end
+    return ids
+end
+
+local function BuildPreyNightmareQuestIds()
+    local ids = {}
+    for qid = 91211, 91241, 2 do
+        ids[#ids + 1] = qid
+    end
+    for qid = 91256, 91269 do
+        ids[#ids + 1] = qid
+    end
+    return ids
+end
+
 MR:RegisterModule({
     key         = "prey",
     label       = "Prey System",
@@ -8,15 +38,25 @@ MR:RegisterModule({
     defaultOpen = true,
     rows = {
         {
-            key      = "prey_weekly_bounty",
-            label    = PREY_COLOR .. "Weekly Prey:|r",
+            key      = "prey_normal_hunts",
+            label    = PREY_COLOR .. "Normal Hunts:|r",
             max      = 4,
-            note     = "Complete 4 Prey targets for the weekly cache",
-            questIds = {
-                91095, 91096, 91097, 91098, 91099, 91100, 91101, 91102, 91103, 91104,
-                91105, 91106, 91107, 91108, 91109, 91110, 91111, 91112, 91113, 91114,
-                91115, 91116, 91117, 91118, 91119, 91120, 91121, 91122, 91123, 91124,
-            },
+            note     = "Normal-difficulty prey hunts completed this week (max 4)",
+            questIds = BuildPreyNormalQuestIds(),
+        },
+        {
+            key      = "prey_hard_hunts",
+            label    = PREY_COLOR .. "Hard Hunts:|r",
+            max      = 4,
+            note     = "Hard-difficulty prey hunts completed this week (max 4)",
+            questIds = BuildPreyHardQuestIds(),
+        },
+        {
+            key      = "prey_nightmare_hunts",
+            label    = PREY_COLOR .. "Nightmare Hunts:|r",
+            max      = 4,
+            note     = "Nightmare-difficulty prey hunts completed this week (max 4)",
+            questIds = BuildPreyNightmareQuestIds(),
         },
         {
             key        = "prey_remnants",

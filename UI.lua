@@ -905,6 +905,14 @@ function MR:PopulateConfigFrame(f)
             if MR.ToggleRares then MR:ToggleRares() end
         end, "#e05050")
     Gap(4); Divider()
+    SectionLabel("GATHERING LOCATIONS")
+    Checkbox("Open Gathering Window",
+        function() return MR.db and MR.db.profile.gatheringLocOpen end,
+        function(v)
+            MR.db.profile.gatheringLocOpen = v
+            if MR.ToggleGatheringLocations then MR:ToggleGatheringLocations() end
+        end, "#c9853f")
+    Gap(4); Divider()
     SectionLabel("OPTIONS")
     Checkbox("Collapse Completed (Global)",
         function() return MR.db.profile.hideComplete end,

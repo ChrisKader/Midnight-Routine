@@ -3,8 +3,9 @@ local FONT_ROWS    = MR_FONT_ROWS
 local hex          = MR_HEX
 
 local pendingEnabled = {}
-local pendingRenown  = false
-local pendingRares   = false
+local pendingRenown      = false
+local pendingRares       = false
+local pendingGathering   = false
 local checkboxRefs   = {}
 
 local function BuildWelcomeScreen()
@@ -15,8 +16,9 @@ local function BuildWelcomeScreen()
         pendingEnabled[mod.key] = MR:IsModuleEnabled(mod.key)
     end
 
-    pendingRenown = MR.db and MR.db.profile.renownOpen or false
-    pendingRares  = MR.db and MR.db.profile.raresOpen  or false
+    pendingRenown   = MR.db and MR.db.profile.renownOpen     or false
+    pendingRares    = MR.db and MR.db.profile.raresOpen      or false
+    pendingGathering = MR.db and MR.db.profile.gatheringLocOpen or false
 
     local f = MR_StyledFrame(UIParent, "MRWelcomeFrame", "FULLSCREEN_DIALOG", 200)
     f:SetSize(310, 10)
@@ -191,7 +193,44 @@ local function BuildWelcomeScreen()
 
     yOff = yOff - 80
 
-    yOff = yOff - 4
+    local gatheringPanel = CreateFrame("Frame", nil, f, "BackdropTemplate")
+    gatheringPanel:SetPoint("TOPLEFT",  f, "TOPLEFT",   8, yOff)
+    gatheringPanel:SetPoint("TOPRIGHT", f, "TOPRIGHT", -8, yOff)
+    gatheringPanel:SetHeight(72)
+    gatheringPanel:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1 })
+    gatheringPanel:SetBackdropColor(0.08, 0.10, 0.03, 0.85)
+    gatheringPanel:SetBackdropBorderColor(0.65, 0.57, 0.10, 0.90)
+
+    local gatheringAccent = gatheringPanel:CreateTexture(nil, "ARTWORK")
+    gatheringAccent:SetHeight(2)
+    gatheringAccent:SetPoint("TOPLEFT",  gatheringPanel, "TOPLEFT",  1, -1)
+    gatheringAccent:SetPoint("TOPRIGHT", gatheringPanel, "TOPRIGHT", -1, -1)
+    gatheringAccent:SetColorTexture(0.80, 0.53, 0.20, 0.85)
+
+    local gatheringCb = CreateFrame("CheckButton", nil, gatheringPanel, "UICheckButtonTemplate")
+    gatheringCb:SetSize(22, 22)
+    gatheringCb:SetPoint("LEFT", gatheringPanel, "LEFT", 8, 4)
+    gatheringCb:SetChecked(pendingGathering)
+    gatheringCb:SetScript("OnClick", function(s)
+        pendingGathering = s:GetChecked()
+    end)
+
+    local gatheringLbl = gatheringPanel:CreateFontString(nil, "OVERLAY")
+    gatheringLbl:SetFont(FONT_HEADERS, 12, "OUTLINE")
+    gatheringLbl:SetPoint("LEFT",  gatheringCb, "RIGHT", 4, 4)
+    gatheringLbl:SetPoint("RIGHT", gatheringPanel, "RIGHT", -8, 0)
+    gatheringLbl:SetJustifyH("LEFT")
+    gatheringLbl:SetText("|cffc9853fGathering Locations|r")
+
+    local gatheringDesc = gatheringPanel:CreateFontString(nil, "OVERLAY")
+    gatheringDesc:SetFont(FONT_ROWS, 10, "OUTLINE")
+    gatheringDesc:SetPoint("TOPLEFT",  gatheringPanel, "TOPLEFT",  10, -42)
+    gatheringDesc:SetPoint("BOTTOMRIGHT", gatheringPanel, "BOTTOMRIGHT", -10, 6)
+    gatheringDesc:SetJustifyH("LEFT")
+    gatheringDesc:SetJustifyV("TOP")
+    gatheringDesc:SetText("|cffaabbaaShowsa separate window tracking profession gathering item locations.|r")
+
+    yOff = yOff - 80
     MakeDivider(yOff)
     yOff = yOff - 10
 
@@ -260,6 +299,10 @@ local function BuildWelcomeScreen()
             MR.db.profile.raresOpen = pendingRares
             if pendingRares and MR.ToggleRares then
                 MR:ToggleRares()
+            end
+            MR.db.profile.gatheringLocOpen = pendingGathering
+            if pendingGathering and MR.ToggleGatheringLocations then
+                MR:ToggleGatheringLocations()
             end
         end
         MR.db.profile.firstSeen = true

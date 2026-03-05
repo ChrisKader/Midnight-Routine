@@ -69,7 +69,7 @@ local function ScanExpansion(exp, mdb)
                 local questDone = pair[3] ~= 0 and C_QuestLog.IsQuestFlaggedCompleted(pair[3])
                 if questDone then
                     done = done + 1
-                    entries[#entries + 1] = "|cff808080" .. zoneName .. ": " .. (poiInfo.name or "?") .. " \xE2\x9C\x93|r"
+                    entries[#entries + 1] = "|cff808080" .. zoneName .. ": " .. (poiInfo.name or "?") .. " \226\156\147|r"
                 else
                     entries[#entries + 1] = zoneName .. ": " .. (poiInfo.name or "?")
                 end
@@ -193,7 +193,7 @@ MR:RegisterModule({
                 local entries = mdb and mdb["bountiful_entries"]
                 tip:AddLine(" ")
                 if expName then
-                    tip:AddLine(expName .. " \xe2\x80\x94 today's bountifuls:", 1, 1, 1)
+                    tip:AddLine(expName .. " \226\128\148 today's bountifuls:", 1, 1, 1)
                 end
                 if entries and entries ~= "" then
                     for line in entries:gmatch("[^\n]+") do
