@@ -1,5 +1,4 @@
-local PVP_RED          = "|cffcc3333"
-local PVP_GOLD         = "|cffffb347"
+local L = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine")
 
 local HONOR_CAP        = 15000
 local CONQUEST_CAP     = 1600
@@ -10,6 +9,7 @@ local CURRENCY_CONQUEST     = 1602
 local CURRENCY_BLOODY_TOKEN = 2123
 
 local QUEST_SPARKS_ZULAMAN        = 93424
+local QUEST_SPARKS_HARANDAR       = 93425
 local QUEST_PRESERVING_BATTLE     = 80184
 local QUEST_PRESERVING_SOLO       = 80185
 local QUEST_PRESERVING_SKIRMISHES = 80187
@@ -17,7 +17,7 @@ local QUEST_PRESERVING_ARENAS     = 80188
 
 MR:RegisterModule({
     key         = "pvp_currencies",
-    label       = "PvP Currencies",
+    label       = L["PvP_CurrenciesTitle"],
     labelColor  = "#cc3333",
     resetType   = "weekly",
     defaultOpen = true,
@@ -26,66 +26,102 @@ MR:RegisterModule({
             key        = "honor",
             currencyId = CURRENCY_HONOR,
             max        = HONOR_CAP,
-            label      = PVP_RED .. "Honor:|r",
-            note       = "Earn from Battlegrounds, Skirmishes, Rated PvP\nCap: 15,000 · Buys Galactic Aspirant (Honor) gear",
+            label      = L["PvP_Honor_Label"],
+            note       = L["PvP_Honor_Note"],
         },
         {
             key        = "conquest",
             currencyId = CURRENCY_CONQUEST,
             max        = CONQUEST_CAP,
-            label      = PVP_GOLD .. "Conquest:|r",
-            note       = "Season 1 starts March 17 · Cap: 1,600 week 1, +800/week\nVendor: Irissa Bloodstar in Silvermoon",
+            label      = L["PvP_Conquest_Label"],
+            note       = L["PvP_Conquest_Note"],
         },
         {
             key        = "bloody_tokens",
             currencyId = CURRENCY_BLOODY_TOKEN,
             max        = BLOODY_TOKEN_CAP,
-            label      = PVP_RED .. "Bloody Tokens:|r",
-            note       = "War Mode currency · Cap: 1,600 week 1, +800/week\nVendor: Knight-Lord Bloodvalor in Silvermoon\nBuys Galactic Warmonger (Veteran Track) gear",
+            label      = L["PvP_BloodyTokens_Label"],
+            note       = L["PvP_BloodyTokens_Note"],
         },
     },
 })
 
 MR:RegisterModule({
     key         = "pvp_weeklies",
-    label       = "PvP Weeklies",
+    label       = L["PvP_WeekliesTitle"],
     labelColor  = "#cc3333",
     resetType   = "weekly",
     defaultOpen = true,
     rows = {
         {
             key      = "sparks_of_war",
-            label    = PVP_RED .. "Sparks of War:|r",
+            label    = L["PvP_Sparks_Label"],
             max      = 1,
-            note     = "Collect 100 Sparks in any Midnight zone with War Mode on\nPick up from Zerella in Silvermoon · /way #2393 36.25 81.14\nRewards: 1,000 Bloody Tokens · 500 Honor · 50 Conquest",
-            questIds = { QUEST_SPARKS_ZULAMAN },
+            note     = L["PvP_Sparks_Note"],
+            questIds = { QUEST_SPARKS_ZULAMAN, QUEST_SPARKS_HARANDAR },
+            tooltipFunc = function(tip)
+                local variants = {
+                    { quest = QUEST_SPARKS_ZULAMAN,  name = L["PvP_Sparks_ZA"] },
+                    { quest = QUEST_SPARKS_HARANDAR, name = L["PvP_Sparks_Harandar"] },
+                }
+
+                local completedName = nil
+                local activeName = nil
+
+                for _, v in ipairs(variants) do
+                    if C_QuestLog.IsQuestFlaggedCompleted(v.quest) then
+                        completedName = v.name
+                        break
+                    end
+                end
+
+                if not completedName then
+                    for _, v in ipairs(variants) do
+                        if C_QuestLog.IsOnQuest(v.quest) then
+                            activeName = v.name
+                            break
+                        end
+                    end
+                end
+
+                tip:AddLine(" ")
+                if completedName then
+                    tip:AddLine(L["Tooltip_Done_Variant"], 1, 1, 1)
+                    tip:AddLine("  " .. completedName, 0.4, 0.85, 0.4)
+                elseif activeName then
+                    tip:AddLine(L["Tooltip_Active_Variant"], 1, 1, 1)
+                    tip:AddLine("  " .. activeName, 1, 0.9, 0.3)
+                else
+                    tip:AddLine(L["Tooltip_No_Sparks"], 1, 1, 1)
+                end
+            end,
         },
         {
             key      = "preserving_solo",
-            label    = PVP_RED .. "Preserving Solo:|r",
+            label    = L["PvP_Solo_Label"],
             max      = 1,
-            note     = "Complete 12 rounds of Solo Shuffle\nRewards: ~175 Conquest · 500 Honor",
+            note     = L["PvP_Solo_Note"],
             questIds = { QUEST_PRESERVING_SOLO },
         },
         {
             key      = "preserving_skirmishes",
-            label    = PVP_RED .. "Preserving in Skirmishes:|r",
+            label    = L["PvP_Skirmishes_Label"],
             max      = 1,
-            note     = "Earn 1,000 Honor in Arena Skirmishes\nRewards: ~125 Conquest · 350 Honor",
+            note     = L["PvP_Skirmishes_Note"],
             questIds = { QUEST_PRESERVING_SKIRMISHES },
         },
         {
             key      = "preserving_arenas",
-            label    = PVP_RED .. "Preserving in Arenas:|r",
+            label    = L["PvP_Arenas_Label"],
             max      = 1,
-            note     = "Earn Honor in Rated Arenas\nRewards: ~125 Conquest · 350 Honor",
+            note     = L["PvP_Arenas_Note"],
             questIds = { QUEST_PRESERVING_ARENAS },
         },
         {
             key      = "preserving_battle",
-            label    = PVP_RED .. "Preserving in Battle:|r",
+            label    = L["PvP_Battle_Label"],
             max      = 1,
-            note     = "Complete Battlegrounds for Honor & Conquest\nRewards: ~175 Conquest · 500 Honor",
+            note     = L["PvP_Battle_Note"],
             questIds = { QUEST_PRESERVING_BATTLE },
         },
     },

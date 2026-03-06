@@ -1,16 +1,18 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine")
+
 local DUNGEON_TIERS = {
-    { 10, "Myth",     "#ff8000" },
-    {  7, "Hero",     "#0070dd" },
-    {  4, "Champion", "#f1c232" },
-    {  2, "Veteran",  "#1eff00" },
-    {  0, "Follower", "#b7b7b7" },
+    { 10, L["Myth"],     "#ff8000" },
+    {  7, L["Hero"],     "#0070dd" },
+    {  4, L["Champion"], "#f1c232" },
+    {  2, L["Veteran"],  "#1eff00" },
+    {  0, L["Follower"], "#b7b7b7" },
 }
 
 local RAID_DIFF = {
-    [14] = { "Normal", "#1eff00" },
-    [15] = { "Heroic", "#0070dd" },
-    [16] = { "Mythic", "#ff8000" },
-    [17] = { "LFR",    "#b7b7b7" },
+    [14] = { L["Normal"], "#1eff00" },
+    [15] = { L["Heroic"], "#0070dd" },
+    [16] = { L["Mythic"], "#ff8000" },
+    [17] = { L["LFR"],    "#b7b7b7" },
 }
 
 local DIFF_RANK = { [17]=1, [14]=2, [15]=3, [16]=4 }
@@ -20,17 +22,17 @@ local function GetDungeonTier(level)
     for _, t in ipairs(DUNGEON_TIERS) do
         if level >= t[1] then return t[2], t[3] end
     end
-    return "Follower", "#b7b7b7"
+    return L["Follower"], "#b7b7b7"
 end
 
 local function GetRaidDiffName(diffId)
     local d = RAID_DIFF[diffId]
-    return d and d[1] or "Normal", d and d[2] or "#1eff00"
+    return d and d[1] or L["Normal"], d and d[2] or "#1eff00"
 end
 
 MR:RegisterModule({
     key         = "great_vault",
-    label       = "Great Vault",
+    label       = L["GreatVault_Title"],
     labelColor  = "#ff8000",
     resetType   = "weekly",
     defaultOpen = true,
@@ -81,95 +83,95 @@ MR:RegisterModule({
     rows = {
         {
             key              = "vault_r2",
-            label            = "|cffff8000Raid x2 Bosses:|r",
+            label            = L["Vault_Raid2_Label"],
             max              = 2,
-            vaultLabel       = "Normal",
+            vaultLabel       = L["Normal"],
             vaultColor       = "#1eff00",
-            note             = "Defeat 2 Bosses",
+            note             = L["Vault_Raid2_Note"],
             liveKey          = "vault_r_progress",
             liveTierLabelKey = "vault_r_diff_label",
             liveTierColorKey = "vault_r_diff_color",
         },
         {
             key              = "vault_r4",
-            label            = "|cffff8000Raid x4 Bosses:|r",
+            label            = L["Vault_Raid4_Label"],
             max              = 4,
-            vaultLabel       = "Heroic",
+            vaultLabel       = L["Heroic"],
             vaultColor       = "#0070dd",
-            note             = "Defeat 4 Bosses",
+            note             = L["Vault_Raid4_Note"],
             liveKey          = "vault_r_progress",
             liveTierLabelKey = "vault_r_diff_label",
             liveTierColorKey = "vault_r_diff_color",
         },
         {
             key              = "vault_r6",
-            label            = "|cffff8000Raid x6 Bosses:|r",
+            label            = L["Vault_Raid6_Label"],
             max              = 6,
-            vaultLabel       = "Mythic",
+            vaultLabel       = L["Mythic"],
             vaultColor       = "#ff8000",
-            note             = "Defeat 6 Bosses",
+            note             = L["Vault_Raid6_Note"],
             liveKey          = "vault_r_progress",
             liveTierLabelKey = "vault_r_diff_label",
             liveTierColorKey = "vault_r_diff_color",
         },
         {
             key              = "vault_d1",
-            label            = "|cff00ccffDungeon x1:|r",
+            label            = L["Vault_Dungeon1_Label"],
             max              = 1,
-            vaultLabel       = "Veteran",
+            vaultLabel       = L["Veteran"],
             vaultColor       = "#1eff00",
-            note             = "Complete 1 Heroic, Mythic, or Timewalking Dungeon",
+            note             = L["Vault_Dungeon1_Note"],
             liveKey          = "vault_d_progress",
             liveTierLabelKey = "vault_d_tier_label",
             liveTierColorKey = "vault_d_tier_color",
         },
         {
             key              = "vault_d4",
-            label            = "|cff00ccffDungeon x4:|r",
+            label            = L["Vault_Dungeon4_Label"],
             max              = 4,
-            vaultLabel       = "Champion",
+            vaultLabel       = L["Champion"],
             vaultColor       = "#f1c232",
-            note             = "Complete 4 Heroic, Mythic, or Timewalking Dungeons",
+            note             = L["Vault_Dungeon4_Note"],
             liveKey          = "vault_d_progress",
             liveTierLabelKey = "vault_d_tier_label",
             liveTierColorKey = "vault_d_tier_color",
         },
         {
             key              = "vault_d8",
-            label            = "|cff00ccffDungeon x8:|r",
+            label            = L["Vault_Dungeon8_Label"],
             max              = 8,
-            vaultLabel       = "Hero",
+            vaultLabel       = L["Hero"],
             vaultColor       = "#0070dd",
-            note             = "Complete 8 Heroic, Mythic, or Timewalking Dungeons",
+            note             = L["Vault_Dungeon8_Note"],
             liveKey          = "vault_d_progress",
             liveTierLabelKey = "vault_d_tier_label",
             liveTierColorKey = "vault_d_tier_color",
         },
         {
             key        = "vault_w2",
-            label      = "|cffc8956cWorld x2:|r",
+            label      = L["Vault_World2_Label"],
             max        = 2,
-            vaultLabel = "Adventurer",
+            vaultLabel = L["Adventurer"],
             vaultColor = "#b7b7b7",
-            note       = "Complete 2 Delves or World Activities",
+            note       = L["Vault_World2_Note"],
             liveKey    = "vault_w_progress",
         },
         {
             key        = "vault_w4",
-            label      = "|cffc8956cWorld x4:|r",
+            label      = L["Vault_World4_Label"],
             max        = 4,
-            vaultLabel = "Champion",
+            vaultLabel = L["Champion"],
             vaultColor = "#f1c232",
-            note       = "Complete 4 Delves or World Activities",
+            note       = L["Vault_World4_Note"],
             liveKey    = "vault_w_progress",
         },
         {
             key        = "vault_w8",
-            label      = "|cffc8956cWorld x8:|r",
+            label      = L["Vault_World8_Label"],
             max        = 8,
-            vaultLabel = "Hero",
+            vaultLabel = L["Hero"],
             vaultColor = "#0070dd",
-            note       = "Complete 8 Delves or World Activities",
+            note       = L["Vault_World8_Note"],
             liveKey    = "vault_w_progress",
         },
     },

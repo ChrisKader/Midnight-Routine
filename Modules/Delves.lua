@@ -6,10 +6,11 @@ local DELVERS_BOUNTY_ITEM = 233071
 local QUEST_CALL_TO_DELVES  = 84776
 local QUEST_MIDNIGHT_DELVES = 93909
 local QUEST_NULLAEUS        = 93525
+local L = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine")
 
 local EXPANSIONS = {
     {
-        label  = "Midnight",
+        label  = L["Midnight"],
         mapIds = { [2395]=true, [2405]=true, [2413]=true, [2437]=true },
         zones  = {
             { uiMapId = 2395, delves = { {8426,8425,93384}, {8438,8437,93372} } },
@@ -19,7 +20,7 @@ local EXPANSIONS = {
         },
     },
     {
-        label  = "War Within",
+        label  = L["Delves_WarWithin"],
         mapIds = { [2248]=true, [2214]=true, [2215]=true, [2255]=true, [2346]=true, [2371]=true },
         zones  = {
             { uiMapId = 2248, delves = { {7779,7864,82939}, {7781,7865,82941}, {7787,7863,82944} } },
@@ -88,7 +89,7 @@ local lastScan = 0
 
 MR:RegisterModule({
     key         = "delves",
-    label       = "Delves",
+    label       = L["Delves"],
     labelColor  = "#c8956c",
     resetType   = "weekly",
     defaultOpen = false,
@@ -138,50 +139,50 @@ MR:RegisterModule({
     rows = {
         {
             key      = "delve_weekly",
-            label    = "|cffc8956cA Call to Delves (5):|r",
+            label    = L["Delves_Call_Label"],
             max      = 1,
-            note     = "Weekly from Archmage Aethas in Silvermoon",
+            note     = L["Delves_Call_Note"],
             questIds = { QUEST_CALL_TO_DELVES },
         },
         {
             key      = "delve_valeera",
-            label    = "|cffc8956cMidnight: Delves (3):|r",
+            label    = L["Delves_Midnight_Label"],
             max      = 1,
-            note     = "Weekly from Valeera Sanguinar at Delver's HQ — rewards Spark of Radiance",
+            note     = L["Delves_Midnight_Note"],
             questIds = { QUEST_MIDNIGHT_DELVES },
         },
         {
             key     = "delve_runs",
-            label   = "|cffc8956cDelve Runs:|r",
+            label   = L["Delves_Runs_Label"],
             max     = 8,
-            note    = "Feeds Great Vault World slot (2/4/8)",
+            note    = L["Delves_Runs_Note"],
             liveKey = "delve_runs",
         },
         {
             key   = "delve_t8",
-            label = "|cffc8956cTier 8 Delve Cleared:|r",
+            label = L["Delves_T8_Label"],
             max   = 1,
-            note  = "Complete 8x Tier 8+ to maximise Great Vault ilvl",
+            note  = L["Delves_T8_Note"],
         },
         {
             key     = "delve_bounty",
-            label   = "|cffc8956cDelver's Bounty Used:|r",
+            label   = L["Delves_Bounty_Label"],
             max     = 1,
-            note    = "Loot drop from Nullaeus — use before killing the Delve boss",
+            note    = L["Delves_Bounty_Note"],
             liveKey = "delve_bounty",
         },
         {
             key      = "delve_nullaeus",
-            label    = "|cffc8956cNullaeus Defeated:|r",
+            label    = L["Delves_Nullaeus_Label"],
             max      = 1,
-            note     = "Summon via Beacon of Hope after checkpoint — Torment's Rise",
+            note     = L["Delves_Nullaeus_Note"],
             questIds = { QUEST_NULLAEUS },
         },
         {
             key     = "bountiful_count",
-            label   = "|cffc8956cBountiful Delves Done:|r",
+            label   = L["Delves_Bountiful_Label"],
             max     = 4,
-            note    = "Bountiful delves completed today out of those currently active.",
+            note    = L["Delves_Bountiful_Note"],
             liveKey = "bountiful_live",
             isVisible = function()
                 local mdb = MR.db.char.progress["delves"]
@@ -193,14 +194,14 @@ MR:RegisterModule({
                 local entries = mdb and mdb["bountiful_entries"]
                 tip:AddLine(" ")
                 if expName then
-                    tip:AddLine(expName .. " \226\128\148 today's bountifuls:", 1, 1, 1)
+                    tip:AddLine(string.format(L["Delves_Bountiful_Today"], expName), 1, 1, 1)
                 end
                 if entries and entries ~= "" then
                     for line in entries:gmatch("[^\n]+") do
                         tip:AddLine("  " .. line, 0.9, 0.85, 0.6)
                     end
                 else
-                    tip:AddLine("No bountiful delves detected.", 0.6, 0.6, 0.6)
+                    tip:AddLine(L["Delves_No_Bountiful"], 0.6, 0.6, 0.6)
                 end
             end,
         },

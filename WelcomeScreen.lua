@@ -1,6 +1,7 @@
 local FONT_HEADERS = MR_FONT_HEADERS
 local FONT_ROWS    = MR_FONT_ROWS
 local hex          = MR_HEX
+local L            = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine")
 
 local pendingEnabled = {}
 local pendingRenown      = false
@@ -43,7 +44,7 @@ local function BuildWelcomeScreen()
     local titleTxt = titleBar:CreateFontString(nil, "OVERLAY")
     titleTxt:SetFont(FONT_HEADERS, 13, "OUTLINE")
     titleTxt:SetPoint("LEFT", icon, "RIGHT", 7, 0)
-    titleTxt:SetText("|cff2ae7c6Midnight Routine|r  |cff8899aaSetup|r")
+    titleTxt:SetText(L["Welcome_Title"])
 
     local yOff = -46
 
@@ -52,7 +53,7 @@ local function BuildWelcomeScreen()
     heading:SetPoint("TOPLEFT",  f, "TOPLEFT",  14, yOff)
     heading:SetPoint("TOPRIGHT", f, "TOPRIGHT", -14, yOff)
     heading:SetJustifyH("LEFT")
-    heading:SetText("|cffffffffWhich modules would you like active?|r")
+    heading:SetText(L["Welcome_Heading"])
 
     yOff = yOff - 18
 
@@ -61,7 +62,7 @@ local function BuildWelcomeScreen()
     hint:SetPoint("TOPLEFT",  f, "TOPLEFT",  14, yOff)
     hint:SetPoint("TOPRIGHT", f, "TOPRIGHT", -14, yOff)
     hint:SetJustifyH("LEFT")
-    hint:SetText("|cff99aabbYou can change these any time in Options.|r")
+    hint:SetText(L["Welcome_Hint"])
 
     yOff = yOff - 16
 
@@ -142,7 +143,7 @@ local function BuildWelcomeScreen()
     renownLbl:SetPoint("LEFT",  renownCb, "RIGHT", 4, 4)
     renownLbl:SetPoint("RIGHT", renownPanel, "RIGHT", -8, 0)
     renownLbl:SetJustifyH("LEFT")
-    renownLbl:SetText("|cffd9b82eRenown Window|r")
+    renownLbl:SetText(L["Welcome_Renown"])
 
     local renownDesc = renownPanel:CreateFontString(nil, "OVERLAY")
     renownDesc:SetFont(FONT_ROWS, 10, "OUTLINE")
@@ -150,7 +151,7 @@ local function BuildWelcomeScreen()
     renownDesc:SetPoint("BOTTOMRIGHT", renownPanel, "BOTTOMRIGHT", -10, 6)
     renownDesc:SetJustifyH("LEFT")
     renownDesc:SetJustifyV("TOP")
-    renownDesc:SetText("|cffaabbaaTracks all your Renowns for Midnight in a separate window.|r")
+    renownDesc:SetText(L["Welcome_Renown_Desc"])
 
     yOff = yOff - 80
 
@@ -181,7 +182,7 @@ local function BuildWelcomeScreen()
     raresLbl:SetPoint("LEFT",  raresCb, "RIGHT", 4, 4)
     raresLbl:SetPoint("RIGHT", raresPanel, "RIGHT", -8, 0)
     raresLbl:SetJustifyH("LEFT")
-    raresLbl:SetText("|cffe05050Rares Frame|r")
+    raresLbl:SetText(L["Welcome_Rares"])
 
     local raresDesc = raresPanel:CreateFontString(nil, "OVERLAY")
     raresDesc:SetFont(FONT_ROWS, 10, "OUTLINE")
@@ -189,7 +190,7 @@ local function BuildWelcomeScreen()
     raresDesc:SetPoint("BOTTOMRIGHT", raresPanel, "BOTTOMRIGHT", -10, 6)
     raresDesc:SetJustifyH("LEFT")
     raresDesc:SetJustifyV("TOP")
-    raresDesc:SetText("|cffaabbaaShows a separate Rares tracker window for all Midnight zones.|r")
+    raresDesc:SetText(L["Welcome_Rares_Desc"])
 
     yOff = yOff - 80
 
@@ -220,7 +221,7 @@ local function BuildWelcomeScreen()
     gatheringLbl:SetPoint("LEFT",  gatheringCb, "RIGHT", 4, 4)
     gatheringLbl:SetPoint("RIGHT", gatheringPanel, "RIGHT", -8, 0)
     gatheringLbl:SetJustifyH("LEFT")
-    gatheringLbl:SetText("|cffc9853fGathering Locations|r")
+    gatheringLbl:SetText(L["Welcome_Gathering"])
 
     local gatheringDesc = gatheringPanel:CreateFontString(nil, "OVERLAY")
     gatheringDesc:SetFont(FONT_ROWS, 10, "OUTLINE")
@@ -228,7 +229,7 @@ local function BuildWelcomeScreen()
     gatheringDesc:SetPoint("BOTTOMRIGHT", gatheringPanel, "BOTTOMRIGHT", -10, 6)
     gatheringDesc:SetJustifyH("LEFT")
     gatheringDesc:SetJustifyV("TOP")
-    gatheringDesc:SetText("|cffaabbaaShowsa separate window tracking profession gathering item locations.|r")
+    gatheringDesc:SetText(L["Welcome_Gathering_Desc"])
 
     yOff = yOff - 80
     MakeDivider(yOff)
@@ -246,7 +247,7 @@ local function BuildWelcomeScreen()
     local eaLbl = enableAllBtn:CreateFontString(nil, "OVERLAY")
     eaLbl:SetFont(FONT_ROWS, 10, "OUTLINE")
     eaLbl:SetPoint("CENTER")
-    eaLbl:SetText("|cffaabbccDisable All Modules|r")
+    eaLbl:SetText(L["Welcome_Disable_All"])
 
     enableAllBtn:SetScript("OnClick", function()
         allOn = not allOn
@@ -259,7 +260,7 @@ local function BuildWelcomeScreen()
                 end
             end
         end
-        eaLbl:SetText(allOn and "|cffaabbccDisable All Modules|r" or "|cff2ae7c6Enable All Modules|r")
+        eaLbl:SetText(allOn and L["Welcome_Disable_All"] or L["Welcome_Enable_All"])
     end)
     enableAllBtn:SetScript("OnEnter", function()
         enableAllBtn:SetBackdropColor(0.06, 0.22, 0.32, 1)
@@ -283,7 +284,7 @@ local function BuildWelcomeScreen()
     local confirmLbl = confirmBtn:CreateFontString(nil, "OVERLAY")
     confirmLbl:SetFont(FONT_HEADERS, 12, "OUTLINE")
     confirmLbl:SetPoint("CENTER")
-    confirmLbl:SetText("|cff00ff96Confirm & Start|r")
+    confirmLbl:SetText(L["Welcome_Confirm"])
 
     confirmBtn:SetScript("OnClick", function()
         local anyEnabled = false

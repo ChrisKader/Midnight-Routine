@@ -1,5 +1,6 @@
 local registeredCampaigns = {}
 local SKIP_STATES = { [3] = true }
+local L = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine")
 
 local function GetChapterPosition(chapterIds, chapterId)
     for i, cid in ipairs(chapterIds) do
@@ -45,15 +46,15 @@ local function TryRegisterCampaigns()
                 local info       = C_CampaignInfo.GetCampaignInfo(campaignId)
                 local chapterIds = C_CampaignInfo.GetChapterIDs and C_CampaignInfo.GetChapterIDs(campaignId)
                 if chapterIds and #chapterIds > 0 then
-                    local name     = (info and info.name and info.name ~= "") and info.name or ("Campaign " .. campaignId)
+                    local name     = (info and info.name and info.name ~= "") and info.name or (L["Story_CampaignPrefix"] .. campaignId)
                     local mapId    = info and info.uiMapID
                     local mapInfo  = mapId and C_Map.GetMapInfo and C_Map.GetMapInfo(mapId)
                     local zoneName = mapInfo and mapInfo.name
-                    local label    = zoneName and ("Story: " .. zoneName .. " \226\128\148 " .. name) or ("Story: " .. name)
+                    local label    = zoneName and (L["Story_StoryPrefix"] .. zoneName .. " - " .. name) or (L["Story_StoryPrefix"] .. name)
                     local rows     = {}
                     for _, chapterId in ipairs(chapterIds) do
                         local ch          = C_CampaignInfo.GetCampaignChapterInfo and C_CampaignInfo.GetCampaignChapterInfo(chapterId)
-                        local chapterName = (ch and ch.name and ch.name ~= "") and ch.name or ("Chapter " .. chapterId)
+                        local chapterName = (ch and ch.name and ch.name ~= "") and ch.name or (L["Story_ChapterPrefix"] .. chapterId)
                         table.insert(rows, {
                             key   = "ch_" .. chapterId,
                             label = "|cffffff88" .. chapterName .. ":|r",

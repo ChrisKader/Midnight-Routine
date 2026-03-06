@@ -1,5 +1,24 @@
 # Midnight Routine
 
+## [v12.0.15](https://github.com/LoyalFTW/Midnight-Routine/tree/v12.0.15) (2026-03-05)
+[Full Changelog](https://github.com/LoyalFTW/Midnight-Routine/compare/v12.0.14...v12.0.15) [Previous Releases](https://github.com/LoyalFTW/Midnight-Routine/releases)
+
+### Added
+- **Hide Frames in Instances option** - new global option to auto-hide addon frames in dungeon, delve, raid, arena, and battleground instances, then restore them when leaving
+- **Temporary hide helpers for standalone frames** - Rares, Renown, and Gathering now support non-destructive hide/show so instance auto-hide does not overwrite saved open state
+- **Weekly variant status tooltips** - added variant detection details for Sparks of War and Saltheril's Soiree so you can see which quest version is active or completed
+
+### Fixed
+- **Sparks of War not always counting** - tracker now includes both known Midnight weekly variants (`93424`, `93425`)
+- **Saltheril's Soiree not always counting** - tracker now includes both observed quest variants (`93889`, `91966`)
+- **Currency tab mismatch (crest weekly progress/caps)** - currency scan now follows Blizzard live fields for current/cap display, including dynamic caps that change week to week
+- **Unicode display issues in tracker text** - replaced recently added non-ASCII symbols with plain ASCII labels in weekly tooltip/status text
+
+### Changed
+- **Currency tracking behavior aligned to Blizzard UI** - scan logic now prefers live API cap/value fields and updates displayed max values dynamically
+
+---
+
 ## [v12.0.14](https://github.com/LoyalFTW/Midnight-Routine/tree/v12.0.14) (2026-03-05)
 [Full Changelog](https://github.com/LoyalFTW/Midnight-Routine/compare/v12.0.13...v12.0.14) [Previous Releases](https://github.com/LoyalFTW/Midnight-Routine/releases)
 

@@ -1,6 +1,4 @@
-local COLOR_DMF = "|cffcc99ff"
-local COLOR_TW  = "|cff66ccff"
-local COLOR_WB  = "|cffff4444"
+local L = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine")
 
 local HOLIDAY_DARKMOON_FAIRE = 479
 
@@ -55,7 +53,7 @@ end
 
 MR:RegisterModule({
     key         = "darkmoon_faire",
-    label       = "Darkmoon Faire",
+    label       = L["DMF_Title"],
     labelColor  = "#cc99ff",
     resetType   = "weekly",
     defaultOpen = true,
@@ -65,51 +63,51 @@ MR:RegisterModule({
     rows = {
         {
             key     = "dmf_profession",
-            label   = COLOR_DMF .. "Profession Quests:|r",
+            label   = L["DMF_Prof_Label"],
             max     = 6,
-            note    = "One quest per profession — gives 5 skill points each",
+            note    = L["DMF_Prof_Note"],
             liveKey = "dmf_profession",
         },
         {
             key     = "dmf_dungeon",
-            label   = COLOR_DMF .. "Dungeon: A Treatise on Strategy:|r",
+            label   = L["DMF_Dungeon_Label"],
             max     = 1,
-            note    = "Complete a dungeon while at the Faire",
+            note    = L["DMF_Dungeon_Note"],
             liveKey = "dmf_dungeon",
         },
         {
             key     = "dmf_tonk",
-            label   = COLOR_DMF .. "Game: Tonk Championship:|r",
+            label   = L["DMF_Tonk_Label"],
             max     = 1,
-            note    = "Destroy 30 Tonk targets",
+            note    = L["DMF_Tonk_Note"],
             liveKey = "dmf_tonk",
         },
         {
             key     = "dmf_shooting",
-            label   = COLOR_DMF .. "Game: It's Hammer Time:|r",
+            label   = L["DMF_Hammer_Label"],
             max     = 1,
-            note    = "Strike the bell 30 times",
+            note    = L["DMF_Hammer_Note"],
             liveKey = "dmf_shooting",
         },
         {
             key     = "dmf_ring",
-            label   = COLOR_DMF .. "Game: Ring Toss:|r",
+            label   = L["DMF_Ring_Label"],
             max     = 1,
-            note    = "Toss 3 rings onto the post",
+            note    = L["DMF_Ring_Note"],
             liveKey = "dmf_ring",
         },
         {
             key     = "dmf_cannon",
-            label   = COLOR_DMF .. "Game: He Shoots, He Scores!:|r",
+            label   = L["DMF_Cannon_Label"],
             max     = 1,
-            note    = "Launch yourself out of the cannon",
+            note    = L["DMF_Cannon_Note"],
             liveKey = "dmf_cannon",
         },
         {
             key     = "dmf_sword",
-            label   = COLOR_DMF .. "Game: Target Toss:|r",
+            label   = L["DMF_Target_Label"],
             max     = 1,
-            note    = "Hit 3 targets with throwing daggers",
+            note    = L["DMF_Target_Note"],
             liveKey = "dmf_sword",
         },
     },
@@ -135,7 +133,7 @@ end
 
 MR:RegisterModule({
     key         = "world_bosses",
-    label       = "World Boss",
+    label       = L["WB_Title"],
     labelColor  = "#ff4444",
     resetType   = "weekly",
     defaultOpen = true,
@@ -148,33 +146,33 @@ MR:RegisterModule({
     rows = {
         {
             key       = "skarmorak",
-            label     = COLOR_WB .. "Skarmorak:|r",
+            label     = L["WB_Skarmorak_Label"],
             max       = 1,
-            note      = "World Boss — Isle of Dorn",
+            note      = L["WB_Skarmorak_Note"],
             questIds  = { 78319 },
             isVisible = function() return IsInMap(MAPID_ISLE_OF_DORN) end,
         },
         {
             key       = "aggregation",
-            label     = COLOR_WB .. "Aggregation of Horrors:|r",
+            label     = L["WB_Aggregation_Label"],
             max       = 1,
-            note      = "World Boss — The Ringing Deeps",
+            note      = L["WB_Aggregation_Note"],
             questIds  = { 83173 },
             isVisible = function() return IsInMap(MAPID_RINGING_DEEPS) end,
         },
         {
             key       = "odalrik",
-            label     = COLOR_WB .. "Odalrik:|r",
+            label     = L["WB_Odalrik_Label"],
             max       = 1,
-            note      = "World Boss — Hallowfall",
+            note      = L["WB_Odalrik_Note"],
             questIds  = { 80385 },
             isVisible = function() return IsInMap(MAPID_HALLOWFALL) end,
         },
         {
             key       = "echo_forgotten",
-            label     = COLOR_WB .. "Echo of the Forgotten:|r",
+            label     = L["WB_Echo_Label"],
             max       = 1,
-            note      = "World Boss — Azj-Kahet",
+            note      = L["WB_Echo_Note"],
             questIds  = { 84446 },
             isVisible = function() return IsInMap(MAPID_AZJ_KAHET) end,
         },
@@ -183,7 +181,7 @@ MR:RegisterModule({
 
 MR:RegisterModule({
     key         = "timewalking",
-    label       = "Dungeon",
+    label       = L["TW_DungeonTitle"],
     labelColor  = "#66ccff",
     resetType   = "weekly",
     defaultOpen = true,
@@ -192,9 +190,9 @@ MR:RegisterModule({
     rows = {
         {
             key      = "tw_weekly",
-            label    = COLOR_TW .. "Timewalking Weekly:|r",
+            label    = L["TW_Weekly_Label"],
             max      = 1,
-            note     = "Complete 5 Timewalking dungeons for the weekly cache",
+            note     = L["TW_Weekly_Note"],
             questIds = { 40753, 40173, 40786, 40785, 45566, 62786 },
         },
     },

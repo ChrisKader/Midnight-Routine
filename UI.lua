@@ -1,4 +1,5 @@
 local cfgFrame
+local L = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine")
 
 local PANEL_MIN_WIDTH  = 200
 local PANEL_MAX_WIDTH  = 500
@@ -148,7 +149,7 @@ function MR:BuildUI()
     local title = titleBar:CreateFontString(nil, "OVERLAY")
     title:SetFont(FONT_HEADERS, math.max(9, GetFontSize()), "OUTLINE")
     title:SetPoint("LEFT", titleIcon, "RIGHT", 5, 0)
-    title:SetText("|cff2ae7c6Midnight Routine|r")
+    title:SetText(L["Title"])
 
     local titleCount = titleBar:CreateFontString(nil, "OVERLAY")
     titleCount:SetFont(FONT_ROWS, math.max(8, GetFontSize() - 1), "OUTLINE")
@@ -222,8 +223,8 @@ function MR:BuildUI()
         {0.75, 0.28, 0.28},
         {0.35, 0.06, 0.06},
         {0.90, 0.25, 0.25},
-        "Close",
-        "Hide Midnight Routine"
+        L["Close"],
+        L["UI_HideAddon"]
     )
     closeBtn:SetPoint("RIGHT", titleBar, "RIGHT", -BTN_MARGIN, 0)
     closeBtn:SetScript("OnClick", function()
@@ -236,8 +237,8 @@ function MR:BuildUI()
         {0.25, 0.80, 0.68},
         {0.06, 0.22, 0.28},
         {0.20, 0.80, 0.65},
-        "Minimize",
-        "Collapse to header bar"
+        L["Minimize"],
+        L["UI_CollapseHint"]
     )
     minBtn:SetPoint("RIGHT", closeBtn, "LEFT", -BTN_PAD, 0)
     self.minBtn = minBtn
@@ -283,8 +284,8 @@ function MR:BuildUI()
         {0.85, 0.65, 0.20},
         {0.18, 0.13, 0.03},
         {0.95, 0.72, 0.18},
-        "Options",
-        "/mr for chat commands"
+        L["Options"],
+        L["UI_ChatHint"]
     )
     cfgBtn:SetPoint("RIGHT", minBtn, "LEFT", -BTN_PAD, 0)
     cfgBtn:SetScript("OnClick", function()
@@ -296,8 +297,8 @@ function MR:BuildUI()
     cfgBtn:SetScript("OnEnter", function(s)
         origCfgEnter(s)
         if MR.db and not MR.db.profile.firstSeen then
-            GameTooltip:AddLine("|cff2ae7c6Click here for Options!|r", 1, 1, 1)
-            GameTooltip:AddLine("Everything is fully modular", 0.9, 0.85, 0.3)
+            GameTooltip:AddLine(L["Options_Glow"], 1, 1, 1)
+            GameTooltip:AddLine(L["UI_ModularHint"], 0.9, 0.85, 0.3)
             GameTooltip:Show()
         end
     end)
@@ -639,7 +640,7 @@ function MR:BuildSection(mod, yOff, xOff, colW, col)
         hdrHover:SetColorTexture(1, 1, 1, 0.05)
         GameTooltip:SetOwner(hdrFrame, "ANCHOR_RIGHT")
         GameTooltip:SetText(mod.label, 1, 1, 1)
-        GameTooltip:AddLine("Left-click: expand/collapse", 0.5, 0.5, 0.5)
+        GameTooltip:AddLine(L["Tooltip_ExpandCollapse"], 0.5, 0.5, 0.5)
         GameTooltip:Show()
     end)
     hdrFrame:SetScript("OnLeave", function()
@@ -704,8 +705,8 @@ function MR:BuildRow(mod, row, done, yOff, collapsed, xOff, colW)
 
         rowFrame:SetScript("OnEnter", function()
             GameTooltip:SetOwner(rowFrame, "ANCHOR_RIGHT")
-            GameTooltip:SetText("Done: " .. row.label, 0.4, 0.85, 0.4, 1, true)
-            GameTooltip:AddLine("Completed this week", 0.3, 0.6, 0.3)
+            GameTooltip:SetText(L["Tooltip_DonePrefix"] .. row.label, 0.4, 0.85, 0.4, 1, true)
+            GameTooltip:AddLine(L["Tooltip_CompletedWeek"], 0.3, 0.6, 0.3)
             GameTooltip:Show()
         end)
         rowFrame:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -727,15 +728,15 @@ function MR:BuildRow(mod, row, done, yOff, collapsed, xOff, colW)
             row.tooltipFunc(GameTooltip)
         end
         if row.liveKey then
-            GameTooltip:AddLine("Auto-tracked via Blizzard API", 0.4, 0.8, 1)
+            GameTooltip:AddLine(L["Tooltip_AutoBlizzard"], 0.4, 0.8, 1)
         elseif row.questIds then
-            GameTooltip:AddLine("Auto-tracked via quest log", 0.4, 1, 0.6)
+            GameTooltip:AddLine(L["Tooltip_AutoQuest"], 0.4, 1, 0.6)
         elseif row.spellId then
-            GameTooltip:AddLine("Auto-tracked via item use", 0.9, 0.6, 1)
+            GameTooltip:AddLine(L["Tooltip_AutoItem"], 0.9, 0.6, 1)
         elseif row.currencyId then
-            GameTooltip:AddLine("Auto-tracked via currency", 1, 0.8, 0.2)
+            GameTooltip:AddLine(L["Tooltip_AutoCurrency"], 1, 0.8, 0.2)
         else
-            GameTooltip:AddLine("Left-click: +1   Right-click: -1", 0.5, 0.5, 0.5)
+            GameTooltip:AddLine(L["Tooltip_ManualClick"], 0.5, 0.5, 0.5)
         end
         GameTooltip:Show()
     end)
@@ -838,7 +839,7 @@ function MR:BuildConfigFrame()
 
     local ttitle = tbar:CreateFontString(nil, "OVERLAY")
     ttitle:SetFont(FONT_HEADERS, 11, "OUTLINE")
-    ttitle:SetText("|cffff8000Options|r")
+    ttitle:SetText(L["Config_Title"])
     ttitle:SetPoint("LEFT", tbar, "LEFT", 8, 0)
 
     local closeBtn = CreateFrame("Button", nil, tbar, "UIPanelCloseButton")
@@ -893,32 +894,32 @@ function MR:PopulateConfigFrame(f)
     end
     local function Btn(label, onClick) yOff = MR_OptionsBtn(body, yOff, label, onClick, 192, 8) end
 
-    SectionLabel("RENOWN TRACKER")
-    Checkbox("Open Renown Window",
+    SectionLabel(L["Config_RenownTracker"])
+    Checkbox(L["Config_OpenRenown"],
         function() return MR.db and MR.db.profile.renownOpen end,
         function(v)
             MR.db.profile.renownOpen = v
             if MR.ToggleRenown then MR:ToggleRenown() end
         end, "#d9b82e")
     Gap(4); Divider()
-    SectionLabel("RARES FRAME")
-    Checkbox("Open Rares Window",
+    SectionLabel(L["Config_RaresFrame"])
+    Checkbox(L["Config_OpenRares"],
         function() return MR.db and MR.db.profile.raresOpen end,
         function(v)
             MR.db.profile.raresOpen = v
             if MR.ToggleRares then MR:ToggleRares() end
         end, "#e05050")
     Gap(4); Divider()
-    SectionLabel("GATHERING LOCATIONS")
-    Checkbox("Open Gathering Window",
+    SectionLabel(L["Config_GatheringLocations"])
+    Checkbox(L["Config_OpenGathering"],
         function() return MR.db and MR.db.profile.gatheringLocOpen end,
         function(v)
             MR.db.profile.gatheringLocOpen = v
             if MR.ToggleGatheringLocations then MR:ToggleGatheringLocations() end
         end, "#c9853f")
     Gap(4); Divider()
-    SectionLabel("OPTIONS")
-    Checkbox("Collapse Completed (Global)",
+    SectionLabel(L["OPTIONS"])
+    Checkbox(L["Config_CollapseCompleted"],
         function() return MR.db.profile.hideComplete end,
         function(v)
             MR.db.profile.hideComplete = v
@@ -929,16 +930,16 @@ function MR:PopulateConfigFrame(f)
             end
             MR:RefreshUI()
         end)
-    Checkbox("Lock Frame",
+    Checkbox(L["Config_LockFrame"],
         function() return MR.db.profile.locked end,
         function(v)
             MR.db.profile.locked = v
             MR.frame:SetMovable(not v)
         end)
-    Checkbox("Hide Minimap Icon",
+    Checkbox(L["Config_HideMinimap"],
         function() return MR.db.profile.minimap and MR.db.profile.minimap.hide or false end,
         function(v) MR:SetMinimapHidden(v) end)
-    Checkbox("Hide Frames in Instances",
+    Checkbox(L["Config_HideInInstances"],
         function() return MR.db.profile.hideFramesInInstances end,
         function(v)
             MR.db.profile.hideFramesInInstances = v
@@ -948,19 +949,19 @@ function MR:PopulateConfigFrame(f)
         end)
 
     Gap(6)
-    yOff = MR_OptionsSlider(body, yOff, "WIDTH", PANEL_MIN_WIDTH, PANEL_MAX_WIDTH, 10,
+    yOff = MR_OptionsSlider(body, yOff, L["WIDTH"], PANEL_MIN_WIDTH, PANEL_MAX_WIDTH, 10,
         function() return MR.db.profile.width or 260 end,
         function(v) ApplyWidth(v); MR:PopulateConfigFrame(f) end,
         0.16, 0.78, 0.75, 8)
 
     Gap(6)
-    yOff = MR_OptionsSlider(body, yOff, "HEIGHT", PANEL_MIN_HEIGHT, PANEL_MAX_HEIGHT, 10,
+    yOff = MR_OptionsSlider(body, yOff, L["HEIGHT"], PANEL_MIN_HEIGHT, PANEL_MAX_HEIGHT, 10,
         function() return MR.db.profile.height or 400 end,
         function(v) ApplyHeight(v); MR:PopulateConfigFrame(f) end,
         0.16, 0.75, 0.78, 8)
 
     Gap(6)
-    yOff = MR_OptionsSlider(body, yOff, "FONT SIZE", FONT_SIZE_MIN, FONT_SIZE_MAX, 1,
+    yOff = MR_OptionsSlider(body, yOff, L["Config_FontSize"], FONT_SIZE_MIN, FONT_SIZE_MAX, 1,
         function() return GetFontSize() end,
         function(v) ApplyFontSize(math.floor(v)); MR:PopulateConfigFrame(f) end,
         0.78, 0.55, 0.16, 8)
@@ -997,7 +998,7 @@ function MR:PopulateConfigFrame(f)
     yOff = yOff - 40
 
     Gap(4)
-    yOff = MR_OptionsSlider(body, yOff, "BACKGROUND", 0, 1, 0.05,
+    yOff = MR_OptionsSlider(body, yOff, L["BACKGROUND"], 0, 1, 0.05,
         function() return MR.db.profile.frameAlpha or 1.0 end,
         function(v)
             MR.db.profile.frameAlpha = v
@@ -1006,7 +1007,7 @@ function MR:PopulateConfigFrame(f)
         0.40, 0.40, 0.40, 8)
 
     Gap(4)
-    yOff = MR_OptionsSlider(body, yOff, "SCALE", 0.5, 2.0, 0.05,
+    yOff = MR_OptionsSlider(body, yOff, L["SCALE"], 0.5, 2.0, 0.05,
         function() return MR.db.profile.scale or 1.0 end,
         function(v)
             MR.db.profile.scale = v
@@ -1015,7 +1016,7 @@ function MR:PopulateConfigFrame(f)
         0.55, 0.22, 0.82, 8)
 
     Gap(4); Divider()
-    SectionLabel("MODULE SETTINGS")
+    SectionLabel(L["Config_ModuleSettings"])
 
     if not MR._cfgExpanded then MR._cfgExpanded = {} end
 
@@ -1048,7 +1049,7 @@ function MR:PopulateConfigFrame(f)
             btn:SetBackdropBorderColor(0.25, 0.85, 0.72, 1)
             fs:SetTextColor(1, 1, 1)
             GameTooltip:SetOwner(btn, "ANCHOR_RIGHT")
-            GameTooltip:SetText(MR:IsModuleHideComplete(key) and "Completed rows collapsed — click to expand" or "Completed rows shown — click to collapse", 1, 1, 1)
+            GameTooltip:SetText(MR:IsModuleHideComplete(key) and L["Config_RowsCollapsed"] or L["Config_RowsShown"], 1, 1, 1)
             GameTooltip:Show()
         end)
         btn:SetScript("OnLeave", function()
@@ -1075,7 +1076,7 @@ function MR:PopulateConfigFrame(f)
                 MR:PopulateConfigFrame(f)
                 return dr, dg, db
             end,
-            "Header Color")
+            L["Config_HeaderColor"])
         swatch:SetPoint("RIGHT", anchorRight, "LEFT", -2, 0)
         return swatch
     end
@@ -1335,7 +1336,7 @@ function MR:PopulateConfigFrame(f)
                 arrowBtn:SetBackdropBorderColor(0.25, 0.85, 0.72, 1)
                 arrowLbl:SetTextColor(1, 1, 1)
                 GameTooltip:SetOwner(arrowBtn, "ANCHOR_RIGHT")
-                GameTooltip:SetText("Expand/collapse rows", 1, 1, 1)
+                GameTooltip:SetText(L["Config_ExpandCollapseRows"], 1, 1, 1)
                 GameTooltip:Show()
             end)
             arrowBtn:SetScript("OnLeave", function()
@@ -1464,7 +1465,7 @@ function MR:PopulateConfigFrame(f)
                         eyeBtn:SetBackdropBorderColor(0.25, 0.85, 0.72, 1)
                         eyeLbl:SetTextColor(1, 1, 1)
                         GameTooltip:SetOwner(eyeBtn, "ANCHOR_RIGHT")
-                        GameTooltip:SetText(enabled and "Click to hide this row" or "Click to show this row", 1, 1, 1)
+                        GameTooltip:SetText(enabled and L["Config_HideRow"] or L["Config_ShowRow"], 1, 1, 1)
                         GameTooltip:Show()
                     end)
                     eyeBtn:SetScript("OnLeave", function()
@@ -1492,19 +1493,19 @@ function MR:PopulateConfigFrame(f)
     end
 
     Gap(4); Divider()
-    SectionLabel("RESETS")
-    Btn("Reset Everything", function()
+    SectionLabel(L["RESETS"])
+    Btn(L["Config_ResetEverything"], function()
         MR.db.char.progress = {}
         MR.db.profile.headerColors = {}
         MR:Scan()
         MR:PopulateConfigFrame(f)
     end)
-    Btn("Reset All Colors", function()
+    Btn(L["Config_ResetColors"], function()
         MR.db.profile.headerColors = {}
         MR:RefreshUI()
         MR:PopulateConfigFrame(f)
     end)
-    Btn("Reset Section Order", function()
+    Btn(L["Config_ResetOrder"], function()
         MR.db.profile.moduleOrder = {}
         MR._orderedModulesCache = nil
         MR:RefreshUI()

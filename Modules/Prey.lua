@@ -1,4 +1,4 @@
-local PREY_COLOR = "|cffcc2244"
+local L = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine")
 
 local function BuildPreyNormalQuestIds()
     local ids = {}
@@ -32,39 +32,39 @@ end
 
 MR:RegisterModule({
     key         = "prey",
-    label       = "Prey System",
+    label       = L["Prey_Title"],
     labelColor  = "#cc2244",
     resetType   = "weekly",
     defaultOpen = true,
     rows = {
         {
             key      = "prey_normal_hunts",
-            label    = PREY_COLOR .. "Normal Hunts:|r",
+            label    = L["Prey_Normal_Label"],
             max      = 4,
-            note     = "Normal-difficulty prey hunts completed this week (max 4)",
+            note     = L["Prey_Normal_Note"],
             questIds = BuildPreyNormalQuestIds(),
         },
         {
             key      = "prey_hard_hunts",
-            label    = PREY_COLOR .. "Hard Hunts:|r",
+            label    = L["Prey_Hard_Label"],
             max      = 4,
-            note     = "Hard-difficulty prey hunts completed this week (max 4)",
+            note     = L["Prey_Hard_Note"],
             questIds = BuildPreyHardQuestIds(),
         },
         {
             key      = "prey_nightmare_hunts",
-            label    = PREY_COLOR .. "Nightmare Hunts:|r",
+            label    = L["Prey_Nightmare_Label"],
             max      = 4,
-            note     = "Nightmare-difficulty prey hunts completed this week (max 4)",
+            note     = L["Prey_Nightmare_Note"],
             questIds = BuildPreyNightmareQuestIds(),
         },
         {
             key        = "prey_remnants",
-            label      = PREY_COLOR .. "Remnants of Anguish:|r",
+            label      = L["Prey_Remnants_Label"],
             currencyId = 3392,
             max        = 99999,
             noMax      = true,
-            note       = "Current Remnants of Anguish",
+            note       = L["Prey_Remnants_Note"],
         },
     },
 })

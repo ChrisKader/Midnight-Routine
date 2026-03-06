@@ -3,6 +3,7 @@ local addonName = "MidnightRoutine"
 local LibStub  = LibStub
 local AceAddon = LibStub("AceAddon-3.0")
 local AceDB    = LibStub("AceDB-3.0")
+local L        = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
 MR = AceAddon:NewAddon(addonName, "AceEvent-3.0", "AceBucket-3.0", "AceTimer-3.0")
 
@@ -282,15 +283,26 @@ function MR:Scan()
             if row.currencyId then
                 local info = C_CurrencyInfo.GetCurrencyInfo(row.currencyId)
                 if info then
-                    local hasWeeklyCap = info.maxWeeklyQuantity and info.maxWeeklyQuantity > 0
-                    local raw
-                    if hasWeeklyCap then
-                        raw = info.quantityEarnedThisWeek
-                    elseif row.max and info.quantity >= row.max then
-                        raw = row.max
-                    else
-                        raw = info.quantity
+                    local raw = info.quantity or 0
+                    local dynamicCap = nil
+
+                    if info.maxQuantity and info.maxQuantity > 0 then
+                        dynamicCap = info.maxQuantity
+                        if info.useTotalEarnedForMaxQty and info.totalEarned ~= nil then
+                            raw = info.totalEarned
+                        else
+                            raw = info.quantity or 0
+                        end
+                    elseif info.maxWeeklyQuantity and info.maxWeeklyQuantity > 0 then
+                        dynamicCap = info.maxWeeklyQuantity
+                        raw = info.quantityEarnedThisWeek or 0
                     end
+
+                    if dynamicCap and row.max ~= dynamicCap then
+                        row.max = dynamicCap
+                        dirty = true
+                    end
+
                     local val = row.noMax and raw or math.min(raw, row.max or raw)
                     if WriteProgress(progress, mod.key, row.key, val) then dirty = true end
                 end
@@ -347,7 +359,7 @@ function MR:DoWeeklyReset()
         end
     end
     self:Scan()
-    print("|cff2ae7c6MidnightRoutine:|r Weekly reset applied.")
+    print(L["Weekly_Reset"])
 end
 
 function MR:OnInitialize()
@@ -530,11 +542,11 @@ SlashCmdList["MIDROUTE"] = function(msg)
     elseif msg == "lock"    then
         MR.db.profile.locked = true
         if MR.frame then MR.frame:SetMovable(false) end
-        print("|cff2ae7c6MidnightRoutine:|r Frame locked.")
+        print(L["Frame_Locked"])
     elseif msg == "unlock"  then
         MR.db.profile.locked = false
         if MR.frame then MR.frame:SetMovable(true) end
-        print("|cff2ae7c6MidnightRoutine:|r Frame unlocked.")
+        print(L["Frame_Unlocked"])
     elseif msg == "hide"    then
         if MR.frame then MR.frame:Hide() end
         MR.db.profile.panelOpen = false
@@ -544,7 +556,11 @@ SlashCmdList["MIDROUTE"] = function(msg)
     elseif msg == "minimap" then
         local newHide = not (MR.db.profile.minimap and MR.db.profile.minimap.hide)
         MR:SetMinimapHidden(newHide)
-        print("|cff2ae7c6MidnightRoutine:|r Minimap icon " .. (newHide and "hidden" or "shown") .. ".")
+        if newHide then
+            print(L["Minimap_Hidden"])
+        else
+            print(L["Minimap_Shown"])
+        end
     elseif msg:match("^scale %d") then
         local s = tonumber(msg:match("scale (%S+)"))
         if s and s >= 0.5 and s <= 2 then
@@ -560,6 +576,6 @@ SlashCmdList["MIDROUTE"] = function(msg)
     elseif msg == "rares config" then MR:ToggleRaresConfig()
     elseif msg == "gathering" then MR:ToggleGatheringLocations()
     else
-        print("|cff2ae7c6/mr|r commands: show, hide, lock, unlock, reset, minimap, scale <0.5-2>, big, small, welcome, renown, rares, gathering")
+        print(L["Chat_Commands"])
     end
 end

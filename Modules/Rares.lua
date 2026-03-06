@@ -1,5 +1,6 @@
 local FONT_HEADERS = MR_FONT_HEADERS
 local FONT_ROWS    = MR_FONT_ROWS
+local L = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine", true)
 
 local MAP_TO_ZONE_KEY = {
     [2395] = "eversong",
@@ -18,93 +19,93 @@ end
 local ZONES = {
     {
         key      = "eversong",
-        label    = "Eversong Woods",
+        label    = L["Zone_EversongWoods"],
         achievId = 61507,
         color    = { 0.85, 0.72, 0.18 },
         rares = {
-            { "Warden of Weeds",           91280 },
-            { "Overfester Hydra",           92392 },
-            { "Cre'van",                   92391 },
-            { "Lady Liminus",              92393 },
-            { "Bad Zed",                   92404 },
-            { "Banuran",                   92403 },
-            { "Duskburn",                  93550 },
-            { "Dame Bloodshed",            93561 },
-            { "Harried Hawkstrider",       91315 },
-            { "Bloated Snapdragon",        92366 },
-            { "Coralfang",                 92389 },
-            { "Terrinor",                  92409 },
-            { "Waverly",                   92395 },
-            { "Lost Guardian",             92399 },
-            { "Malfunctioning Construct",  93555 },
+            { L["Rare_WardenOfWeeds"],           91280 },
+            { L["Rare_OverfesterHydra"],           92392 },
+            { L["Rare_Crevan"],                   92391 },
+            { L["Rare_LadyLiminus"],              92393 },
+            { L["Rare_BadZed"],                   92404 },
+            { L["Rare_Banuran"],                   92403 },
+            { L["Rare_Duskburn"],                  93550 },
+            { L["Rare_DameBloodshed"],            93561 },
+            { L["Rare_HarriedHawkstrider"],       91315 },
+            { L["Rare_BloatedSnapdragon"],        92366 },
+            { L["Rare_Coralfang"],                 92389 },
+            { L["Rare_Terrinor"],                  92409 },
+            { L["Rare_Waverly"],                   92395 },
+            { L["Rare_LostGuardian"],             92399 },
+            { L["Rare_MalfunctioningConstruct"],  93555 },
         },
     },
     {
         key      = "zulaman",
-        label    = "Zul'Aman",
+        label    = L["Zone_ZulAman"],
         achievId = 62122,
         color    = { 0.82, 0.36, 0.14 },
         rares = {
-            { "Necrohexxer Raz'ka",        89569 },
-            { "Skullcrusher Harak",        89571 },
-            { "Mrrlokk",                   91174 },
-            { "Spinefrill",                89578 },
-            { "Tiny Vermin",               89580 },
-            { "The Devouring Invader",     89583 },
-            { "Depthborn Eelamental",      89573 },
-            { "Ash'an the Empowered",      91073 },
-            { "The Snapping Scourge",      89570 },
-            { "Lightwood Borer",           89575 },
-            { "Poacher Rav'ik",            91634 },
-            { "Oophaga",                   89579 },
-            { "Voidtouched Crustacean",    89581 },
-            { "Elder Oaktalon",            89572 },
-            { "The Decaying Diamondback",  91072 },
+            { L["Rare_NecrohexxerRazka"],        89569 },
+            { L["Rare_SkullcrusherHarak"],        89571 },
+            { L["Rare_Mrrlokk"],                   91174 },
+            { L["Rare_Spinefrill"],                89578 },
+            { L["Rare_TinyVermin"],               89580 },
+            { L["Rare_DevouringInvader"],     89583 },
+            { L["Rare_DepthbornEelamental"],      89573 },
+            { L["Rare_AshanEmpowered"],      91073 },
+            { L["Rare_SnappingScourge"],      89570 },
+            { L["Rare_LightwoodBorer"],           89575 },
+            { L["Rare_PoacherRavik"],            91634 },
+            { L["Rare_Oophaga"],                   89579 },
+            { L["Rare_VoidtouchedCrustacean"],    89581 },
+            { L["Rare_ElderOaktalon"],            89572 },
+            { L["Rare_DecayingDiamondback"],  91072 },
         },
     },
     {
         key      = "harandar",
-        label    = "Harandar",
+        label    = L["Zone_Harandar"],
         achievId = 61264,
         color    = { 0.16, 0.78, 0.55 },
         rares = {
-            { "Rhazul",                    91832 },
-            { "Ha'kalawe",                 92142 },
-            { "Queen Lashtongue",          92154 },
-            { "Stumpy",                    92168 },
-            { "Mindrot",                   92172 },
-            { "Treetop",                   92183 },
-            { "Pterrock",                  92191 },
-            { "Annulus the Worldshaker",   92194 },
-            { "Chironex",                  92137 },
-            { "Tallcap the Truthspreader", 92148 },
-            { "Chlorokyll",                92161 },
-            { "Serrasa",                   92170 },
-            { "Dracaena",                  92176 },
-            { "Oro'ohna",                  92190 },
-            { "Ahl'ua'huhi",               92193 },
+            { L["Rare_Rhazul"],                    91832 },
+            { L["Rare_Hakalawe"],                 92142 },
+            { L["Rare_QueenLastongue"],          92154 },
+            { L["Rare_Stumpy"],                    92168 },
+            { L["Rare_Mindrot"],                   92172 },
+            { L["Rare_Treetop"],                   92183 },
+            { L["Rare_Pterrock"],                  92191 },
+            { L["Rare_AnnulusWorldshaker"],   92194 },
+            { L["Rare_Chironex"],                  92137 },
+            { L["Rare_TallcapTruthspreader"], 92148 },
+            { L["Rare_Chlorokyll"],                92161 },
+            { L["Rare_Serrasa"],                   92170 },
+            { L["Rare_Dracaena"],                  92176 },
+            { L["Rare_Oroohna"],                  92190 },
+            { L["Rare_Ahluahuhi"],               92193 },
         },
     },
     {
         key      = "voidstorm",
-        label    = "Voidstorm",
+        label    = L["Zone_Voidstorm"],
         achievId = 62130,
         color    = { 0.55, 0.28, 0.95 },
         rares = {
-            { "Sundereth the Caller",      90805 },
-            { "Tremora",                   91048 },
-            { "Bane of the Vilebloods",    93946 },
-            { "Lotus Darkblossom",         93947 },
-            { "Ravengerus",                93895 },
-            { "Bilemaw the Gluttonous",    93884 },
-            { "Nightbrood",                91051 },
-            { "Territorial Voidscythe",    91050 },
-            { "Screammaxa the Matriarch",  93966 },
-            { "Aeonelle Blackstar",        93944 },
-            { "Queen o' War",              93934 },
-            { "Rakshur the Bonegrinder",   93953 },
-            { "Eruundi",                   91047 },
-            { "Far'thana the Mad",         93896 },
+            { L["Rare_SunderethCaller"],      90805 },
+            { L["Rare_Tremora"],                   91048 },
+            { L["Rare_BaneVilebloods"],    93946 },
+            { L["Rare_LotusDarkblossom"],         93947 },
+            { L["Rare_Ravengerus"],                93895 },
+            { L["Rare_BilemawGluttonous"],    93884 },
+            { L["Rare_Nightbrood"],                91051 },
+            { L["Rare_TerritorialVoidscythe"],    91050 },
+            { L["Rare_ScreammaxaMatriarch"],  93966 },
+            { L["Rare_AeonelleBlackstar"],        93944 },
+            { L["Rare_QueenOWar"],              93934 },
+            { L["Rare_RakshurBonegrinder"],   93953 },
+            { L["Rare_Eruundi"],                   91047 },
+            { L["Rare_FarthanaMad"],         93896 },
         },
     },
 }
@@ -294,7 +295,7 @@ BuildRaresFrame = function()
     gearBtn:SetScript("OnEnter",  function()
         gearTex:SetVertexColor(0.9, 0.6, 1, 1)
         GameTooltip:SetOwner(gearBtn, "ANCHOR_BOTTOM")
-        GameTooltip:SetText("Rares Options", 1, 1, 1)
+        GameTooltip:SetText(L["Rares_OptionsTitle"], 1, 1, 1)
         GameTooltip:Show()
     end)
     gearBtn:SetScript("OnLeave",  function()
@@ -321,7 +322,7 @@ BuildRaresFrame = function()
         minBtn:SetBackdropBorderColor(0.20, 0.80, 0.65, 1)
         minLbl:SetTextColor(1, 1, 1)
         GameTooltip:SetOwner(minBtn, "ANCHOR_BOTTOM")
-        GameTooltip:SetText("Collapse", 1, 1, 1)
+        GameTooltip:SetText(L["UI_Collapse"], 1, 1, 1)
         GameTooltip:Show()
     end)
     minBtn:SetScript("OnLeave", function()
@@ -351,7 +352,7 @@ BuildRaresFrame = function()
         titleTxt:SetText(string.format(
             "|cffaa66ffRares|r  |cff333344-|r  |cff%s%s|r", hex, visible[1].label))
     else
-        titleTxt:SetText("|cffaa66ffRares|r  |cff333344-|r  |cff555566Midnight|r")
+        titleTxt:SetText(L["Rares_Title"])
     end
 
     local function ApplyMinimized(isMin)
@@ -746,7 +747,7 @@ local function BuildRaresConfigFrame()
 
     local ttitle = tbar:CreateFontString(nil, "OVERLAY")
     ttitle:SetFont(MR_FONT_HEADERS, 10, "OUTLINE")
-    ttitle:SetText("|cffaa66ffRares Options|r")
+    ttitle:SetText(L["Rares_Config_Title"])
     ttitle:SetPoint("LEFT", tbar, "LEFT", 8, 0)
 
     MR_CloseButton(tbar, function() f:Hide() end)
@@ -784,14 +785,14 @@ PopulateRaresConfig = function(f)
     end
     local function Btn(lbl, fn) yOff = MR_OptionsBtn(body, yOff, lbl, fn, 184, P) end
 
-    SecLabel("DISPLAY")
-    Check("Lock Position",
+    SecLabel(L["Config_Display"])
+    Check(L["Config_LockPosition"],
         function() return db.raresLocked end,
         function(v)
             db.raresLocked = v
             if raresFrame then raresFrame:SetMovable(not v) end
         end)
-    Check("Shimmer Animation",
+    Check(L["Config_ShimmerAnim"],
         function() return db.raresShimmer ~= false end,
         function(v)
             db.raresShimmer = v
@@ -812,12 +813,12 @@ PopulateRaresConfig = function(f)
                 end
             end
         end)
-    Check("Hide Killed This Week",
+    Check(L["Config_HideKilled"],
         function() return db.raresHideKilled end,
         function(v) db.raresHideKilled = v; RebuildRaresFrame() end)
 
     Gap(4); Divider()
-    SecLabel("SIZE & OPACITY")
+    SecLabel(L["Config_SizeOpacity"])
     Slider("WIDTH", MIN_W, MAX_W, 10,
         function() return db.raresWidth or DEFAULT_W end,
         function(v)
@@ -899,7 +900,7 @@ PopulateRaresConfig = function(f)
         0.45, 0.22, 0.82)
 
     Gap(4); Divider()
-    SecLabel("ZONE SETTINGS")
+    SecLabel(L["Config_ZoneSettings"])
 
     for _, zone in ipairs(ZONES) do
         local cr, cg, cb = GetZoneColor(zone)
@@ -923,7 +924,7 @@ PopulateRaresConfig = function(f)
                 RebuildRaresFrame()
                 return dr, dg, db2
             end,
-            zone.label .. " color  -  right-click to reset")
+            zone.label .. L["Color_Reset_Hint"])
         swatch:SetPoint("RIGHT", rowFr, "RIGHT", 0, 0)
 
         nameLbl = rowFr:CreateFontString(nil, "OVERLAY")

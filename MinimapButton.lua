@@ -1,5 +1,6 @@
 local LDB     = LibStub("LibDataBroker-1.1")
 local LDBIcon = LibStub("LibDBIcon-1.0")
+local L       = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine")
 
 local GLOW_PULSE_INTERVAL = 1.5
 
@@ -52,10 +53,10 @@ local minimapObject = LDB:NewDataObject("MidnightRoutine", {
     end,
 
     OnTooltipShow = function(tt)
-        tt:AddLine("|cff2ae7c6Midnight Routine|r", 1, 1, 1)
-        tt:AddLine("Left-click: Show / Hide",  0.8, 0.8, 0.8)
-        tt:AddLine("Right-click: Options",     0.8, 0.8, 0.8)
-        tt:AddLine("/mr minimap — hide this icon", 0.5, 0.5, 0.5)
+        tt:AddLine(L["Title"], 1, 1, 1)
+        tt:AddLine(L["Minimap_LeftClick"],  0.8, 0.8, 0.8)
+        tt:AddLine(L["Minimap_RightClick"],     0.8, 0.8, 0.8)
+        tt:AddLine(L["Minimap_HideHint"], 0.5, 0.5, 0.5)
     end,
 })
 

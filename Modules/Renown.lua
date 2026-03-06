@@ -1,5 +1,6 @@
 local FONT_HEADERS = MR_FONT_HEADERS
 local FONT_ROWS    = MR_FONT_ROWS
+local L = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine", true)
 local GetOrderedFactions
 local GetFactionColor
 local SetFactionColor
@@ -11,7 +12,7 @@ local PopulateRenownConfig
 local FACTIONS = {
     {
         key       = "silvermoon",
-        label     = "Silvermoon Court",
+        label     = L["Faction_SilvermoonCourt"],
         factionId = 2710,
         maxRenown = 20,
         color     = { 0.85, 0.72, 0.18 },
@@ -19,7 +20,7 @@ local FACTIONS = {
     },
     {
         key       = "amani",
-        label     = "Amani Tribe",
+        label     = L["Faction_AmaniTribe"],
         factionId = 2696,
         maxRenown = 20,
         color     = { 0.82, 0.36, 0.14 },
@@ -27,7 +28,7 @@ local FACTIONS = {
     },
     {
         key       = "harati",
-        label     = "Hara'ti",
+        label     = L["Faction_Harati"],
         factionId = 2704,
         maxRenown = 20,
         color     = { 0.16, 0.78, 0.55 },
@@ -35,7 +36,7 @@ local FACTIONS = {
     },
     {
         key       = "singularity",
-        label     = "The Singularity",
+        label     = L["Faction_TheSingularity"],
         factionId = 2699,
         maxRenown = 20,
         color     = { 0.45, 0.22, 0.82 },
@@ -97,7 +98,7 @@ local function BuildRenownFrame()
     local titleTxt = titleBar:CreateFontString(nil, "OVERLAY")
     titleTxt:SetFont(FONT_HEADERS, 10, "OUTLINE")
     titleTxt:SetPoint("LEFT", titleIcon, "RIGHT", 7, 0)
-    titleTxt:SetText("|cffd9b82eRenown|r")
+    titleTxt:SetText(L["Renown_Title"])
 
     local closeBtn = MR_CloseButton(titleBar, function()
         f:Hide()
@@ -122,7 +123,7 @@ local function BuildRenownFrame()
     gearBtn:SetScript("OnEnter", function()
         gearTex:SetVertexColor(1, 0.9, 0.4, 1)
         GameTooltip:SetOwner(gearBtn, "ANCHOR_BOTTOM")
-        GameTooltip:SetText("Renown Options", 1, 1, 1)
+        GameTooltip:SetText(L["Renown_OptionsTitle"], 1, 1, 1)
         GameTooltip:Show()
     end)
     gearBtn:SetScript("OnLeave", function()
@@ -202,12 +203,12 @@ local function BuildRenownFrame()
             local capped = C_MajorFactions.HasMaximumRenown(faction.factionId)
             GameTooltip:SetOwner(rowFrame, "ANCHOR_RIGHT")
             GameTooltip:SetText(string.format("|cff%s%s|r", faction.hex, faction.label), 1, 1, 1)
-            GameTooltip:AddLine(string.format("Renown %d / %d", renown, maxRenown), cr, cg, cb)
+            GameTooltip:AddLine(string.format(L["Renown_Level"], renown, maxRenown), cr, cg, cb)
             if capped then
-                GameTooltip:AddLine("Maximum Renown reached!", 0.2, 1, 0.5)
+                GameTooltip:AddLine(L["Renown_MaxReached"], 0.2, 1, 0.5)
             else
-                GameTooltip:AddLine(string.format("Progress: %d / %d", rep, needed), 0.7, 0.7, 0.7)
-                GameTooltip:AddLine(string.format("%d rep to next level", needed - rep), 0.5, 0.5, 0.5)
+                GameTooltip:AddLine(string.format(L["Renown_Progress"], rep, needed), 0.7, 0.7, 0.7)
+                GameTooltip:AddLine(string.format(L["Renown_RepToNext"], needed - rep), 0.5, 0.5, 0.5)
             end
             GameTooltip:Show()
         end)
@@ -298,7 +299,7 @@ local function RefreshRenownFrame()
             row.shimmer:SetWidth(math.min(20, fillW))
 
             if capped then
-                row.barLabel:SetText("MAX")
+                row.barLabel:SetText(L["MAX"])
                 row.barLabel:SetTextColor(cr, cg, cb)
             elseif showRep then
                 row.barLabel:SetText(string.format("%d / %d", rep, needed))
@@ -334,7 +335,7 @@ local function BuildRenownConfigFrame()
 
     local ttitle = tbar:CreateFontString(nil, "OVERLAY")
     ttitle:SetFont(MR_FONT_HEADERS, 11, "OUTLINE")
-    ttitle:SetText("|cffd9b82eRenown Options|r")
+    ttitle:SetText(L["Renown_Config_Title"])
     ttitle:SetPoint("LEFT", tbar, "LEFT", 8, 0)
 
     local closeBtn = MR_CloseButton(tbar, function() f:Hide() end)
@@ -427,17 +428,17 @@ PopulateRenownConfig = function(f)
         yOff = MR_OptionsSlider(body, yOff, lbl, mn, mx, st, get, set, r, g, b, PAD)
     end
 
-    SecLabel("DISPLAY")
-    Check("Lock Position",
+    SecLabel(L["Config_Display"])
+    Check(L["Config_LockPosition"],
         function() return db.renownLocked end,
         function(v)
             db.renownLocked = v
             if renownFrame then renownFrame:SetMovable(not v) end
         end)
-    Check("Show Rep Numbers",
+    Check(L["Config_ShowRepNumbers"],
         function() return db.renownShowRep ~= false end,
         function(v) db.renownShowRep = v; RefreshRenownFrame() end)
-    Check("Shimmer Animation",
+    Check(L["Config_ShimmerAnim"],
         function() return db.renownShimmer ~= false end,
         function(v)
             db.renownShimmer = v
@@ -452,18 +453,18 @@ PopulateRenownConfig = function(f)
                 end
             end
         end)
-    Check("Hide at Max Renown",
+    Check(L["Config_HideAtMax"],
         function() return db.renownHideMaxed end,
         function(v) db.renownHideMaxed = v; RefreshRenownFrame() end)
-    Check("Compact Mode (no icons)",
+    Check(L["Config_CompactMode"],
         function() return db.renownCompact end,
         function(v) db.renownCompact = v; RebuildRenownFrame() end)
-    Check("Show Renown Level",
+    Check(L["Config_ShowRenownLevel"],
         function() return db.renownShowLevel ~= false end,
         function(v) db.renownShowLevel = v; RefreshRenownFrame() end)
 
     Gap(4); Divider()
-    SecLabel("SIZE & OPACITY")
+    SecLabel(L["Config_SizeOpacity"])
     Slider("WIDTH", 200, 400, 10,
         function() return db.renownWidth or 280 end,
         function(v)
@@ -506,7 +507,7 @@ PopulateRenownConfig = function(f)
         0.55, 0.22, 0.82)
 
     Gap(4); Divider()
-    SecLabel("FACTION SETTINGS")
+    SecLabel(L["Config_FactionSettings"])
 
     local drag = { active = false, srcKey = nil, targetIdx = nil }
     local _facRows = {}
@@ -688,7 +689,7 @@ PopulateRenownConfig = function(f)
                 RebuildRenownFrame()
                 return dr, dg, db2
             end,
-            faction.label .. " color  —  right-click to reset")
+            faction.label .. L["Color_Reset_Hint"])
         swatch:SetPoint("RIGHT", rowFr, "RIGHT", 0, 0)
 
         local nameLbl = rowFr:CreateFontString(nil, "OVERLAY")
