@@ -423,7 +423,7 @@ L["Subfaction_ShadesOfTheRow"] = "Shades of the Row"
 -- WorldEvents
 L["DMF_Title"] = "Darkmoon Faire"
 L["DMF_Prof_Label"] = "|cffcc99ffProfession Quests:|r"
-L["DMF_Prof_Note"] = "One quest per profession — gives 5 skill points each"
+L["DMF_Prof_Note"] = "One quest per profession — gives 3 skill points each and 3 specialization"
 L["DMF_Dungeon_Label"] = "|cffcc99ffDungeon: A Treatise on Strategy:|r"
 L["DMF_Dungeon_Note"] = "Complete a dungeon while at the Faire"
 L["DMF_Tonk_Label"] = "|cffcc99ffGame: Tonk Championship:|r"
