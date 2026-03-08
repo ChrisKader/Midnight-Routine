@@ -116,7 +116,7 @@ MR:RegisterModule({
     resetType     = "weekly",
     defaultOpen   = false,
     rows = {
-        { key = "lw_notebook", spellId = 1270537, spellAmount = 2, label = L["LW_Quest"],    max = 1 },
+        { key = "lw_notebook", questIds = { 93695 },                  label = L["LW_Quest"],    max = 1 },
         { key = "lw_drops",    spellId = 1264602, spellAmount = 1, label = L["LW_Drops"],    max = 2 },
         { key = "lw_treatise", questIds = { 95134 },               label = L["LW_Treatise"], max = 1 },
         { key = "lw_dmf",      questIds = { 29517 },               label = L["LW_DMF"],     max = 1 },
@@ -147,7 +147,7 @@ MR:RegisterModule({
     resetType     = "weekly",
     defaultOpen   = false,
     rows = {
-        { key = "skin_notebook", spellId = 1270539, spellAmount = 3, label = L["Skin_Quest"],    max = 1 },
+        { key = "skin_notebook", questIds = { 93710, 93711, 93714 },   label = L["Skin_Quest"],    max = 1 },
         { key = "skin_drops",    spellId = 1225644, spellAmount = 1, label = L["Skin_Drops"],    max = 5 },
         { key = "skin_bone",     spellId = 1225646, spellAmount = 3, label = L["Skin_Bone"],     max = 1 },
         { key = "skin_treatise", questIds = { 95136 },               label = L["Skin_Treatise"], max = 1 },
