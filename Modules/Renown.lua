@@ -157,7 +157,7 @@ local function BuildRenownFrame()
         if compact then nameLabel:Hide() end
 
         local renownLabel = rowFrame:CreateFontString(nil, "OVERLAY")
-        renownLabel:SetFont(FONT_ROWS, 9, "OUTLINE")
+        renownLabel:SetFont(FONT_ROWS, db.renownFontSize or 9, "OUTLINE")
         renownLabel:SetPoint("TOPRIGHT", rowFrame, "TOPRIGHT", -6, -5)
         renownLabel:SetTextColor(0.65, 0.65, 0.65)
         if compact then renownLabel:Hide() end
@@ -183,7 +183,7 @@ local function BuildRenownFrame()
         barFill:SetColorTexture(cr, cg, cb, 0.85)
 
         local barLabel = barBg:CreateFontString(nil, "OVERLAY")
-        barLabel:SetFont(FONT_ROWS, 9, "OUTLINE")
+        barLabel:SetFont(FONT_ROWS, db.renownFontSize or 9, "OUTLINE")
         barLabel:SetPoint("CENTER", barBg, "CENTER", 0, 0)
         barLabel:SetTextColor(1, 1, 1)
 
@@ -417,16 +417,18 @@ PopulateRenownConfig = function(f)
     local yOff = -28
     local PAD  = 8
 
+    local cfgFs = MR.db.profile.syncWindowFontSize and (db.renownFontSize or 9) or 9
+
     local function Gap(h)          yOff = MR_OptionsGap(body, yOff, h) end
     local function Divider()       yOff = MR_OptionsDivider(body, yOff, PAD) end
-    local function SecLabel(t)     yOff = MR_OptionsSectionLabel(body, yOff, t, PAD) end
+    local function SecLabel(t)     yOff = MR_OptionsSectionLabel(body, yOff, t, PAD, cfgFs) end
     local function Check(lbl, get, set, r, g, b)
         yOff = MR_OptionsCheckbox(body, yOff, lbl, get, set, r, g, b, PAD,
-            function() PopulateRenownConfig(f) end)
+            function() PopulateRenownConfig(f) end, cfgFs)
     end
-    local function Btn(lbl, fn)    yOff = MR_OptionsBtn(body, yOff, lbl, fn, 184, PAD) end
-    local function Slider(lbl, mn, mx, st, get, set, r, g, b)
-        yOff = MR_OptionsSlider(body, yOff, lbl, mn, mx, st, get, set, r, g, b, PAD)
+    local function Btn(lbl, fn)    yOff = MR_OptionsBtn(body, yOff, lbl, fn, 184, PAD, cfgFs) end
+    local function Slider(lbl, mn, mx, st, get, set, r, g, b, disabled)
+        yOff = MR_OptionsSlider(body, yOff, lbl, mn, mx, st, get, set, r, g, b, PAD, disabled, cfgFs)
     end
 
     SecLabel(L["Config_Display"])
@@ -505,7 +507,7 @@ PopulateRenownConfig = function(f)
             db.renownScale = v
             if renownFrame then renownFrame:SetScale(v) end
         end,
-        0.55, 0.22, 0.82)
+        0.55, 0.22, 0.82, MR.db.profile.syncWindowScale)
 
     Gap(4); Divider()
     SecLabel(L["Config_FactionSettings"])
@@ -732,6 +734,7 @@ function MR:ToggleRenownConfig()
     end
     if renownFrame and renownFrame:IsShown() then
         renownCfgFrame:SetPoint("TOPLEFT", renownFrame, "TOPRIGHT", 4, 0)
+        renownCfgFrame:SetScale(renownFrame:GetScale())
     elseif MR.frame then
         renownCfgFrame:SetPoint("TOPLEFT", MR.frame, "TOPRIGHT", 4, 0)
     else
@@ -749,6 +752,7 @@ function MR:ToggleRenown()
         self:HideRenown()
     else
         renownFrame:Show()
+        MR.renownFrame = renownFrame
         if self.db then self.db.profile.renownOpen = true end
         RefreshRenownFrame()
     end
@@ -768,6 +772,7 @@ function MR:EnsureRenownShown()
     end
     if not renownFrame:IsShown() then
         renownFrame:Show()
+        MR.renownFrame = renownFrame
         if self.db then self.db.profile.renownOpen = true end
     end
     RefreshRenownFrame()
@@ -775,6 +780,19 @@ end
 
 function MR:RefreshRenown()
     RefreshRenownFrame()
+end
+
+function MR:RepopulateRenownConfig()
+    if renownCfgFrame and renownCfgFrame:IsShown() then
+        PopulateRenownConfig(renownCfgFrame)
+    end
+end
+
+function MR:RebuildRenownFrame()
+    if renownFrame and renownFrame:IsShown() then
+        RebuildRenownFrame()
+        MR.renownFrame = renownFrame
+    end
 end
 
 function MR:OnRenownUpdate()

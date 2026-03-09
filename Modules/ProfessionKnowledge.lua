@@ -501,7 +501,6 @@ local function BuildGatheringLocationsFrame()
                 local done = item.questID and C_QuestLog.IsQuestFlaggedCompleted(item.questID)
 
                 if done and db.gatheringHideCompleted then
-                    -- skip completed rows when hide-completed is enabled
                 else
 
                 local row = CreateFrame("Button", nil, content)
@@ -595,7 +594,7 @@ local function BuildGatheringLocationsFrame()
                 end)
 
                 yOff = yOff + rowHeight + 1
-                end -- hide-completed check
+                end 
             end
             yOff = yOff + 4
         end
@@ -699,6 +698,7 @@ local function BuildGatheringLocationsFrame()
 
     f:SetMovable(not db.gatheringLocked)
     f:SetScale(db.gatheringScale or 1.0)
+    MR.gatheringLocationsFrame = f
     f:Show()
     return f
 end
@@ -770,18 +770,20 @@ PopulateGatheringConfig = function(f)
     local yOff = -28
     local P    = 8
 
+    local cfgFs = MR.db.profile.syncWindowFontSize and (db.gatheringFontSize or 9) or 9
+
     local function Gap(h)      yOff = MR_OptionsGap(body, yOff, h) end
     local function Divider()   yOff = MR_OptionsDivider(body, yOff, P) end
-    local function SecLabel(t) yOff = MR_OptionsSectionLabel(body, yOff, t, P) end
+    local function SecLabel(t) yOff = MR_OptionsSectionLabel(body, yOff, t, P, cfgFs) end
     local function Check(lbl, get, set, r, g, b)
         yOff = MR_OptionsCheckbox(body, yOff, lbl, get, set,
             r or 0.78, g or 0.78, b or 0.88, P,
-            function() PopulateGatheringConfig(f) end)
+            function() PopulateGatheringConfig(f) end, cfgFs)
     end
-    local function Slider(lbl, mn, mx, st, get, set, r, g, b)
-        yOff = MR_OptionsSlider(body, yOff, lbl, mn, mx, st, get, set, r, g, b, P)
+    local function Slider(lbl, mn, mx, st, get, set, r, g, b, disabled)
+        yOff = MR_OptionsSlider(body, yOff, lbl, mn, mx, st, get, set, r, g, b, P, disabled, cfgFs)
     end
-    local function Btn(lbl, fn) yOff = MR_OptionsBtn(body, yOff, lbl, fn, 184, P) end
+    local function Btn(lbl, fn) yOff = MR_OptionsBtn(body, yOff, lbl, fn, 184, P, cfgFs) end
 
     SecLabel("DISPLAY")
     Check("Lock Position",
@@ -790,7 +792,7 @@ PopulateGatheringConfig = function(f)
             db.gatheringLocked = v
             if gatheringLocationsFrame then gatheringLocationsFrame:SetMovable(not v) end
         end)
-        Check("Hide When Completed",
+        Check(L["Config_HideWhenCompleted"],
             function() return db.gatheringHideCompleted end,
             function(v)
                 db.gatheringHideCompleted = v
@@ -815,37 +817,42 @@ PopulateGatheringConfig = function(f)
             end
         end,
         0.60, 0.80, 0.40)
+    local syncFs = MR.db.profile.syncWindowFontSize
     Slider("FONT SIZE", 7, 16, 1,
         function() return db.gatheringFontSize or 9 end,
-        function(v) db.gatheringFontSize = math.floor(v); RebuildGatheringLocationsFrame() end,
-        0.78, 0.55, 0.16)
+        function(v) db.gatheringFontSize = math.floor(v); RebuildGatheringLocationsFrame(); PopulateGatheringConfig(f) end,
+        0.78, 0.55, 0.16, syncFs)
 
     do
         local presets = { {"S", 8}, {"M", 9}, {"L", 11}, {"XL", 13} }
         local btnW    = 42
         for i, p in ipairs(presets) do
-            local isActive = ((db.gatheringFontSize or 9) == p[2])
+            local isActive = (not syncFs) and ((db.gatheringFontSize or 9) == p[2])
             local pb = CreateFrame("Button", nil, body, "BackdropTemplate")
             pb:SetSize(btnW - 2, 16)
             pb:SetPoint("TOPLEFT", body, "TOPLEFT", P + (i-1) * btnW, yOff - 2)
             pb:SetBackdrop(MR_MakeBackdrop())
-            pb:SetBackdropColor(isActive and 0.12 or 0.05, isActive and 0.35 or 0.10, isActive and 0.32 or 0.18, 1)
-            pb:SetBackdropBorderColor(isActive and 0.25 or 0.18, isActive and 0.85 or 0.40, isActive and 0.70 or 0.45, 1)
+            pb:SetBackdropColor(isActive and 0.12 or 0.05, isActive and 0.35 or 0.10, isActive and 0.32 or 0.18, syncFs and 0.4 or 1)
+            pb:SetBackdropBorderColor(isActive and 0.25 or 0.18, isActive and 0.85 or 0.40, isActive and 0.70 or 0.45, syncFs and 0.4 or 1)
             local pfs = pb:CreateFontString(nil, "OVERLAY")
-            pfs:SetFont(FONT_ROWS, 9, "OUTLINE")
+            pfs:SetFont(FONT_ROWS, cfgFs, "OUTLINE")
             pfs:SetPoint("CENTER")
             pfs:SetText(p[1])
-            pfs:SetTextColor(isActive and 0.2 or 0.6, isActive and 0.95 or 0.75, isActive and 0.75 or 0.65)
-            pb:SetScript("OnClick", function()
-                db.gatheringFontSize = p[2]
-                RebuildGatheringLocationsFrame()
-                PopulateGatheringConfig(f)
-            end)
-            pb:SetScript("OnEnter", function() pb:SetBackdropColor(0.10, 0.28, 0.28, 1); pb:SetBackdropBorderColor(0.25, 0.90, 0.75, 1) end)
-            pb:SetScript("OnLeave", function()
-                pb:SetBackdropColor(isActive and 0.12 or 0.05, isActive and 0.35 or 0.10, isActive and 0.32 or 0.18, 1)
-                pb:SetBackdropBorderColor(isActive and 0.25 or 0.18, isActive and 0.85 or 0.40, isActive and 0.70 or 0.45, 1)
-            end)
+            pfs:SetTextColor(syncFs and 0.35 or (isActive and 0.2 or 0.6), syncFs and 0.35 or (isActive and 0.95 or 0.75), syncFs and 0.35 or (isActive and 0.75 or 0.65))
+            if not syncFs then
+                pb:SetScript("OnClick", function()
+                    db.gatheringFontSize = p[2]
+                    RebuildGatheringLocationsFrame()
+                    PopulateGatheringConfig(f)
+                end)
+                pb:SetScript("OnEnter", function() pb:SetBackdropColor(0.10, 0.28, 0.28, 1); pb:SetBackdropBorderColor(0.25, 0.90, 0.75, 1) end)
+                pb:SetScript("OnLeave", function()
+                    pb:SetBackdropColor(isActive and 0.12 or 0.05, isActive and 0.35 or 0.10, isActive and 0.32 or 0.18, 1)
+                    pb:SetBackdropBorderColor(isActive and 0.25 or 0.18, isActive and 0.85 or 0.40, isActive and 0.70 or 0.45, 1)
+                end)
+            else
+                pb:EnableMouse(false)
+            end
         end
         yOff = yOff - 22
     end
@@ -868,7 +875,7 @@ PopulateGatheringConfig = function(f)
             db.gatheringScale = v
             if gatheringLocationsFrame then gatheringLocationsFrame:SetScale(v) end
         end,
-        0.45, 0.22, 0.82)
+        0.45, 0.22, 0.82, MR.db.profile.syncWindowScale)
 
     Gap(4); Divider()
     SecLabel("PROFESSION COLORS")
@@ -935,6 +942,7 @@ function MR:ToggleGatheringLocationsConfig()
             local x, y = gatheringLocationsFrame:GetCenter()
             if x and y then
                 gatheringCfgFrame:SetPoint("LEFT", gatheringLocationsFrame, "RIGHT", 10, 0)
+                gatheringCfgFrame:SetScale(gatheringLocationsFrame:GetScale())
             end
         end
     end
@@ -983,6 +991,18 @@ function MR:HideGatheringLocations(persistState)
     if gatheringCfgFrame then gatheringCfgFrame:Hide() end
     if persistState ~= false and self.db then
         self.db.profile.gatheringLocOpen = false
+    end
+end
+
+function MR:RepopulateGatheringConfig()
+    if gatheringCfgFrame and gatheringCfgFrame:IsShown() then
+        PopulateGatheringConfig(gatheringCfgFrame)
+    end
+end
+
+function MR:RebuildGatheringLocationsFrame()
+    if gatheringLocationsFrame and gatheringLocationsFrame:IsShown() then
+        RebuildGatheringLocationsFrame()
     end
 end
 

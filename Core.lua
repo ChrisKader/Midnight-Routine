@@ -54,6 +54,7 @@ local DEFAULTS = {
         renownCompact        = false,
         renownScale          = 1.0,
         renownShowLevel      = true,
+        renownFontSize       = 9,
         gatheringLocOpen     = false,
         gatheringLocPos      = nil,
         gatheringLocked      = false,
@@ -66,6 +67,8 @@ local DEFAULTS = {
         gatheringProfColors  = {},
             gatheringHideCompleted = false,
         headerColors    = {},
+        syncWindowScale     = false,
+        syncWindowFontSize  = false,
     },
     char = {
         progress = {},
@@ -98,6 +101,39 @@ function MR:SetProgress(moduleKey, rowKey, value, maxVal)
     end
     self.db.char.progress[moduleKey][rowKey] = math.max(0, math.min(value, maxVal))
     self:RefreshUI()
+end
+
+function MR:ApplyScaleToAll(v)
+    self.db.profile.scale          = v
+    self.db.profile.raresScale     = v
+    self.db.profile.renownScale    = v
+    self.db.profile.gatheringScale = v
+    if self.frame then self.frame:SetScale(v) end
+    local rf = self.raresFrame
+    if rf and rf:IsShown() then rf:SetScale(v) end
+    local rnf = self.renownFrame
+    if rnf and rnf:IsShown() then rnf:SetScale(v) end
+    local gf = self.gatheringLocationsFrame
+    if gf and gf:IsShown() then gf:SetScale(v) end
+    if self.RepopulateRaresConfig     then self:RepopulateRaresConfig() end
+    if self.RepopulateGatheringConfig then self:RepopulateGatheringConfig() end
+    if self.RepopulateRenownConfig    then self:RepopulateRenownConfig() end
+    if self.RepopulateConfigFrame     then self:RepopulateConfigFrame() end
+end
+
+function MR:ApplyFontSizeToAll(v)
+    self.db.profile.fontSize          = v
+    self.db.profile.raresFontSize     = v
+    self.db.profile.gatheringFontSize = v
+    self.db.profile.renownFontSize    = v
+    if self.ApplyFontSize then self.ApplyFontSize(v) end
+    if self.RebuildRaresFrame             then self:RebuildRaresFrame() end
+    if self.RebuildGatheringLocationsFrame then self:RebuildGatheringLocationsFrame() end
+    if self.RebuildRenownFrame            then self:RebuildRenownFrame() end
+    if self.RepopulateRaresConfig     then self:RepopulateRaresConfig() end
+    if self.RepopulateGatheringConfig then self:RepopulateGatheringConfig() end
+    if self.RepopulateRenownConfig    then self:RepopulateRenownConfig() end
+    if self.RepopulateConfigFrame     then self:RepopulateConfigFrame() end
 end
 
 function MR:BumpProgress(moduleKey, rowKey, delta, maxVal)

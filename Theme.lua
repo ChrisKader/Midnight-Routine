@@ -173,16 +173,19 @@ function MR_OptionsDivider(body, yOff, pad)
     return yOff - 6
 end
 
-function MR_OptionsSectionLabel(body, yOff, text, pad)
+function MR_OptionsSectionLabel(body, yOff, text, pad, fontSize)
     pad = pad or 8
     local fs = body:CreateFontString(nil, "OVERLAY")
-    fs:SetFont(MR_FONT_ROWS, 9, "OUTLINE")
+    fs:SetFont(MR_FONT_ROWS, fontSize or 9, "OUTLINE")
     fs:SetText("|cff888888" .. text .. "|r")
-    fs:SetPoint("TOPLEFT", body, "TOPLEFT", pad, yOff)
+    fs:SetPoint("TOPLEFT",  body, "TOPLEFT",  pad,  yOff)
+    fs:SetPoint("TOPRIGHT", body, "TOPRIGHT", -pad, yOff)
+    fs:SetJustifyH("LEFT")
+    fs:SetWordWrap(false)
     return yOff - 14
 end
 
-function MR_OptionsCheckbox(body, yOff, label, getVal, setVal, r, g, b, pad, onRefresh)
+function MR_OptionsCheckbox(body, yOff, label, getVal, setVal, r, g, b, pad, onRefresh, fontSize)
     pad = pad or 8
     local fr = CreateFrame("CheckButton", nil, body, "UICheckButtonTemplate")
     fr:SetSize(20, 20)
@@ -194,14 +197,17 @@ function MR_OptionsCheckbox(body, yOff, label, getVal, setVal, r, g, b, pad, onR
         if onRefresh then onRefresh() end
     end)
     local lbl = fr:CreateFontString(nil, "OVERLAY")
-    lbl:SetFont(MR_FONT_ROWS, 10, "OUTLINE")
+    lbl:SetFont(MR_FONT_ROWS, fontSize or 10, "OUTLINE")
     lbl:SetText(label)
     lbl:SetTextColor(r or 0.88, g or 0.88, b or 0.88)
-    lbl:SetPoint("LEFT", fr, "RIGHT", 0, 0)
+    lbl:SetPoint("LEFT",  fr,   "RIGHT",  2,    0)
+    lbl:SetPoint("RIGHT", body, "RIGHT",  -pad, 0)
+    lbl:SetJustifyH("LEFT")
+    lbl:SetWordWrap(false)
     return yOff - 22
 end
 
-function MR_OptionsBtn(body, yOff, label, onClick, width, pad)
+function MR_OptionsBtn(body, yOff, label, onClick, width, pad, fontSize)
     pad   = pad   or 8
     width = width or 184
     local btn = CreateFrame("Button", nil, body, "BackdropTemplate")
@@ -211,8 +217,11 @@ function MR_OptionsBtn(body, yOff, label, onClick, width, pad)
     btn:SetBackdropColor(0.05, 0.10, 0.18, 1)
     btn:SetBackdropBorderColor(0.18, 0.40, 0.45, 1)
     local fs = btn:CreateFontString(nil, "OVERLAY")
-    fs:SetFont(MR_FONT_ROWS, 10, "OUTLINE")
-    fs:SetPoint("CENTER")
+    fs:SetFont(MR_FONT_ROWS, fontSize or 10, "OUTLINE")
+    fs:SetPoint("LEFT", btn, "LEFT", 6, 0)
+    fs:SetWidth(width - 12)
+    fs:SetJustifyH("LEFT")
+    fs:SetWordWrap(false)
     fs:SetText(label)
     fs:SetTextColor(0.70, 0.88, 0.85)
     btn:SetScript("OnClick", onClick)
@@ -229,35 +238,43 @@ function MR_OptionsBtn(body, yOff, label, onClick, width, pad)
     return yOff - 26
 end
 
-function MR_OptionsSlider(body, yOff, label, min, max, step, getVal, setVal, fillR, fillG, fillB, pad)
+function MR_OptionsSlider(body, yOff, label, min, max, step, getVal, setVal, fillR, fillG, fillB, pad, disabled, fontSize)
     pad   = pad   or 8
-    fillR = fillR or 0.85
-    fillG = fillG or 0.65
-    fillB = fillB or 0.10
+    if disabled then
+        fillR, fillG, fillB = 0.30, 0.30, 0.30
+    else
+        fillR = fillR or 0.85
+        fillG = fillG or 0.65
+        fillB = fillB or 0.10
+    end
     local lbl = body:CreateFontString(nil, "OVERLAY")
-    lbl:SetFont(MR_FONT_ROWS, 9, "OUTLINE")
-    lbl:SetText("|cff888888" .. label .. "|r")
-    lbl:SetPoint("TOPLEFT", body, "TOPLEFT", pad, yOff)
+    lbl:SetFont(MR_FONT_ROWS, fontSize or 9, "OUTLINE")
+    lbl:SetText("|cff" .. (disabled and "555555" or "888888") .. label .. "|r")
+    lbl:SetPoint("TOPLEFT",  body, "TOPLEFT",  pad,  yOff)
+    lbl:SetPoint("TOPRIGHT", body, "TOPRIGHT", -pad, yOff)
+    lbl:SetJustifyH("LEFT")
+    lbl:SetWordWrap(false)
     yOff = yOff - 14
     local bg = CreateFrame("Frame", nil, body, "BackdropTemplate")
     bg:SetPoint("TOPLEFT", body, "TOPLEFT", pad, yOff)
     bg:SetSize(138, 14)
     bg:SetBackdrop(MR_MakeBackdrop())
-    bg:SetBackdropColor(0, 0, 0, 0.5)
-    bg:SetBackdropBorderColor(0.25, 0.25, 0.3, 1)
+    bg:SetBackdropColor(0, 0, 0, disabled and 0.25 or 0.5)
+    bg:SetBackdropBorderColor(0.25, 0.25, 0.3, disabled and 0.4 or 1)
     local fill = bg:CreateTexture(nil, "ARTWORK")
     fill:SetPoint("LEFT", bg, "LEFT", 2, 0)
     fill:SetHeight(10)
-    fill:SetColorTexture(fillR, fillG, fillB, 0.85)
+    fill:SetColorTexture(fillR, fillG, fillB, disabled and 0.4 or 0.85)
     local valBox = CreateFrame("Frame", nil, body, "BackdropTemplate")
     valBox:SetPoint("LEFT", bg, "RIGHT", 4, 0)
     valBox:SetSize(44, 14)
     valBox:SetBackdrop(MR_MakeBackdrop())
-    valBox:SetBackdropColor(0, 0, 0, 0.5)
-    valBox:SetBackdropBorderColor(0.25, 0.25, 0.3, 1)
+    valBox:SetBackdropColor(0, 0, 0, disabled and 0.25 or 0.5)
+    valBox:SetBackdropBorderColor(0.25, 0.25, 0.3, disabled and 0.4 or 1)
     local valTxt = valBox:CreateFontString(nil, "OVERLAY")
-    valTxt:SetFont(MR_FONT_ROWS, 9, "OUTLINE")
+    valTxt:SetFont(MR_FONT_ROWS, fontSize or 9, "OUTLINE")
     valTxt:SetPoint("CENTER", valBox, "CENTER", 0, 0)
+    valTxt:SetTextColor(disabled and 0.4 or 1, disabled and 0.4 or 1, disabled and 0.4 or 1)
     local function UpdateVis(v)
         local pct = (v - min) / (max - min)
         fill:SetWidth(math.max(2, (bg:GetWidth() - 4) * pct))
@@ -274,8 +291,12 @@ function MR_OptionsSlider(body, yOff, label, min, max, step, getVal, setVal, fil
     if th then th:Hide() end
     sl:SetValue(getVal())
     UpdateVis(getVal())
-    sl:SetScript("OnValueChanged", function(s, v) UpdateVis(v) end)
-    sl:SetScript("OnMouseUp",      function(s) setVal(s:GetValue()) end)
+    if disabled then
+        sl:EnableMouse(false)
+    else
+        sl:SetScript("OnValueChanged", function(s, v) UpdateVis(v) end)
+        sl:SetScript("OnMouseUp",      function(s) setVal(s:GetValue()) end)
+    end
     return yOff - 18
 end
 

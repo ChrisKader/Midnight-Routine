@@ -564,8 +564,9 @@ function MR:MeasureSection(mod)
             if rowVisible and MR:IsRowEnabled(mod.key, row.key) then
                 local done = MR:GetProgress(mod.key, row.key)
                 local isComplete = not row.noMax and done >= row.max
-                local collapsed  = hideComplete and isComplete
-                h = h + (collapsed and 8 or ROW_HEIGHT)
+                if not (hideComplete and isComplete) then
+                    h = h + ROW_HEIGHT
+                end
             end
         end
     end
@@ -669,10 +670,11 @@ function MR:BuildSection(mod, yOff, xOff, colW, col)
         for _, row in ipairs(mod.rows) do
             local rowVisible = not row.isVisible or row.isVisible()
             if rowVisible and MR:IsRowEnabled(mod.key, row.key) then
-                local done      = MR:GetProgress(mod.key, row.key)
+                local done       = MR:GetProgress(mod.key, row.key)
                 local isComplete = not row.noMax and done >= row.max
-                local collapsed  = hideComplete and isComplete
-                yOff = self:BuildRow(mod, row, done, yOff, collapsed, xOff, colW)
+                if not (hideComplete and isComplete) then
+                    yOff = self:BuildRow(mod, row, done, yOff, false, xOff, colW)
+                end
             end
         end
     end
@@ -927,16 +929,17 @@ function MR:PopulateConfigFrame(f)
     f.body = body
 
     local yOff = -26
+    local cfgFs = MR.db.profile.syncWindowFontSize and GetFontSize() or 9
 
     local function Gap(h)          yOff = MR_OptionsGap(body, yOff, h) end
     local function Divider()       yOff = MR_OptionsDivider(body, yOff, 4) end
-    local function SectionLabel(t) yOff = MR_OptionsSectionLabel(body, yOff, t, 8) end
+    local function SectionLabel(t) yOff = MR_OptionsSectionLabel(body, yOff, t, 8, cfgFs) end
     local function Checkbox(label, getVal, setVal, color)
         local r, g, b
         if color then r, g, b = hex(color) end
-        yOff = MR_OptionsCheckbox(body, yOff, label, getVal, setVal, r, g, b, 4, nil)
+        yOff = MR_OptionsCheckbox(body, yOff, label, getVal, setVal, r, g, b, 4, nil, cfgFs)
     end
-    local function Btn(label, onClick) yOff = MR_OptionsBtn(body, yOff, label, onClick, 192, 8) end
+    local function Btn(label, onClick) yOff = MR_OptionsBtn(body, yOff, label, onClick, 192, 8, cfgFs) end
 
     SectionLabel(L["Config_RenownTracker"])
     Checkbox(L["Config_OpenRenown"],
@@ -963,7 +966,7 @@ function MR:PopulateConfigFrame(f)
         end, "#c9853f")
     Gap(4); Divider()
     SectionLabel(L["OPTIONS"])
-    Checkbox(L["Config_CollapseCompleted"],
+    Checkbox(L["Config_HideWhenCompleted"],
         function() return MR.db.profile.hideComplete end,
         function(v)
             MR.db.profile.hideComplete = v
@@ -996,19 +999,26 @@ function MR:PopulateConfigFrame(f)
     yOff = MR_OptionsSlider(body, yOff, L["WIDTH"], PANEL_MIN_WIDTH, PANEL_MAX_WIDTH, 10,
         function() return MR.db.profile.width or 260 end,
         function(v) ApplyWidth(v); MR:PopulateConfigFrame(f) end,
-        0.16, 0.78, 0.75, 8)
+        0.16, 0.78, 0.75, 8, nil, cfgFs)
 
     Gap(6)
     yOff = MR_OptionsSlider(body, yOff, L["HEIGHT"], PANEL_MIN_HEIGHT, PANEL_MAX_HEIGHT, 10,
         function() return MR.db.profile.height or 400 end,
         function(v) ApplyHeight(v); MR:PopulateConfigFrame(f) end,
-        0.16, 0.75, 0.78, 8)
+        0.16, 0.75, 0.78, 8, nil, cfgFs)
 
     Gap(6)
     yOff = MR_OptionsSlider(body, yOff, L["Config_FontSize"], FONT_SIZE_MIN, FONT_SIZE_MAX, 1,
         function() return GetFontSize() end,
-        function(v) ApplyFontSize(math.floor(v)); MR:PopulateConfigFrame(f) end,
-        0.78, 0.55, 0.16, 8)
+        function(v)
+            if MR.db.profile.syncWindowFontSize then
+                MR:ApplyFontSizeToAll(math.floor(v))
+            else
+                ApplyFontSize(math.floor(v))
+            end
+            MR:PopulateConfigFrame(f)
+        end,
+        0.78, 0.55, 0.16, 8, nil, cfgFs)
 
     local presets = { {"S", 9}, {"M", 11}, {"L", 14}, {"XL", 17} }
     local btnW = 42
@@ -1021,12 +1031,16 @@ function MR:PopulateConfigFrame(f)
         pb:SetBackdropColor(isActive and 0.12 or 0.05, isActive and 0.35 or 0.10, isActive and 0.32 or 0.18, 1)
         pb:SetBackdropBorderColor(isActive and 0.25 or 0.18, isActive and 0.85 or 0.40, isActive and 0.70 or 0.45, 1)
         local pfs = pb:CreateFontString(nil, "OVERLAY")
-        pfs:SetFont(FONT_ROWS, 9, "OUTLINE")
+        pfs:SetFont(FONT_ROWS, cfgFs, "OUTLINE")
         pfs:SetPoint("CENTER")
         pfs:SetText(p[1])
         pfs:SetTextColor(isActive and 0.2 or 0.6, isActive and 0.95 or 0.75, isActive and 0.75 or 0.65)
         pb:SetScript("OnClick", function()
-            ApplyFontSize(p[2])
+            if MR.db.profile.syncWindowFontSize then
+                MR:ApplyFontSizeToAll(p[2])
+            else
+                ApplyFontSize(p[2])
+            end
             MR:PopulateConfigFrame(f)
         end)
         pb:SetScript("OnEnter", function()
@@ -1041,6 +1055,16 @@ function MR:PopulateConfigFrame(f)
 
     yOff = yOff - 40
 
+    Gap(2)
+    yOff = MR_OptionsCheckbox(body, yOff, L["Config_SyncFontSize"],
+        function() return MR.db.profile.syncWindowFontSize end,
+        function(v)
+            MR.db.profile.syncWindowFontSize = v
+            if v then MR:ApplyFontSizeToAll(GetFontSize()) end
+            MR:PopulateConfigFrame(f)
+        end,
+        0.78, 0.55, 0.16, 8, nil, cfgFs)
+
     Gap(4)
     yOff = MR_OptionsSlider(body, yOff, L["BACKGROUND"], 0, 1, 0.05,
         function() return MR.db.profile.frameAlpha or 1.0 end,
@@ -1048,16 +1072,30 @@ function MR:PopulateConfigFrame(f)
             MR.db.profile.frameAlpha = v
             ApplyTheme()
         end,
-        0.40, 0.40, 0.40, 8)
+        0.40, 0.40, 0.40, 8, nil, cfgFs)
 
     Gap(4)
     yOff = MR_OptionsSlider(body, yOff, L["SCALE"], 0.5, 2.0, 0.05,
         function() return MR.db.profile.scale or 1.0 end,
         function(v)
-            MR.db.profile.scale = v
-            if MR.frame then MR.frame:SetScale(v) end
+            if MR.db.profile.syncWindowScale then
+                MR:ApplyScaleToAll(v)
+            else
+                MR.db.profile.scale = v
+                if MR.frame then MR.frame:SetScale(v) end
+            end
         end,
-        0.55, 0.22, 0.82, 8)
+        0.55, 0.22, 0.82, 8, nil, cfgFs)
+
+    Gap(2)
+    yOff = MR_OptionsCheckbox(body, yOff, L["Config_SyncScale"],
+        function() return MR.db.profile.syncWindowScale end,
+        function(v)
+            MR.db.profile.syncWindowScale = v
+            if v then MR:ApplyScaleToAll(MR.db.profile.scale or 1.0) end
+            MR:PopulateConfigFrame(f)
+        end,
+        0.55, 0.22, 0.82, 8, nil, cfgFs)
 
     Gap(4); Divider()
     SectionLabel(L["Config_ModuleSettings"])
@@ -1560,4 +1598,10 @@ function MR:PopulateConfigFrame(f)
     local totalH = math.abs(yOff) + 8
     body:SetHeight(totalH)
     f:SetHeight(totalH)
+end
+
+function MR:RepopulateConfigFrame()
+    if cfgFrame and cfgFrame:IsShown() then
+        self:PopulateConfigFrame(cfgFrame)
+    end
 end
