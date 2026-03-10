@@ -18,9 +18,9 @@ local PADDING       = 6
 local GetFontSize = MR_GetFontSize
 
 local PEEK_ALPHA_IDLE   = 0.0    
-local PEEK_ALPHA_HOVER  = 1.0    
+local PEEK_ALPHA_HOVER  = 1.0   
 local PEEK_FADE_IN      = 6.0    
-local PEEK_FADE_OUT     = 2.5    
+local PEEK_FADE_OUT     = 2.5   
 
 local function PeekFrameList()
     local list = {}
@@ -688,6 +688,7 @@ function MR:BuildSection(mod, yOff, xOff, colW, col)
     lbl:SetFont(FONT_HEADERS, GetFontSize(), "OUTLINE")
     lbl:SetPoint("LEFT", hdrFrame, "LEFT", 8, 0)
     local customColor = MR:GetHeaderColor(mod.key)
+
     local explicitColor = MR.db.profile.headerColors and MR.db.profile.headerColors[mod.key]
     lbl:SetText((allDone and not explicitColor)
         and WC("00ff96", mod.label)
@@ -804,7 +805,10 @@ function MR:BuildRow(mod, row, done, yOff, collapsed, xOff, colW)
         hover:SetColorTexture(1, 1, 1, 0.04)
         if row.currencyId then
             GameTooltip:SetOwner(rowFrame, "ANCHOR_RIGHT")
-            GameTooltip:SetCurrencyByID(row.currencyId)
+            GameTooltip:SetText(row.label, 1, 1, 1, 1, true)
+            local note = row.note or L["Prof_Catchup_Note"]
+            if note then GameTooltip:AddLine(note, 0.7, 0.7, 0.7, true) end
+            GameTooltip:AddLine(L["Tooltip_AutoBlizzard"], 0.4, 0.8, 1)
             GameTooltip:Show()
         else
             GameTooltip:SetOwner(rowFrame, "ANCHOR_RIGHT")
@@ -893,6 +897,7 @@ function MR:BuildRow(mod, row, done, yOff, collapsed, xOff, colW)
     lbl:SetPoint("LEFT",  rowFrame, "LEFT",  PADDING + 10, 0)
     lbl:SetPoint("RIGHT", rowFrame, "RIGHT", lblRightOff, 0)
     lbl:SetJustifyH("LEFT")
+
     local rowCustom    = MR:GetRowColor(mod.key, row.key)
     local headerCustom = MR.db.profile.headerColors and MR.db.profile.headerColors[mod.key]
     local effectiveColor = rowCustom or headerCustom
@@ -961,7 +966,7 @@ function MR:BuildRow(mod, row, done, yOff, collapsed, xOff, colW)
                 countFS:SetTextColor(0.55, 0.55, 0.55, 1)
             end
         end
-        UpdateTimer() 
+        UpdateTimer()  
         rowFrame._timerUpdate = UpdateTimer
         table.insert(MR._timerRows, rowFrame)
     end

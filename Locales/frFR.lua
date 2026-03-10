@@ -139,6 +139,8 @@ L["Vault_Dungeon_Label"]     = "|cff00ccffDonjon :|r"
 L["Vault_TT_Dungeon_Header"] = "Donjons cette semaine : %d"
 L["Vault_World_Label"]       = "|cffc8956cMonde :|r"
 L["Vault_TT_World_Header"]   = "Activités mondiales cette semaine : %d"
+L["Vault_TT_Slot_Unlocked"]  = "  Slot %d  |cff40e080✓ Unlocked|r"
+L["Vault_TT_Slot_Progress"]  = "  Slot %d  %d / %d needed"
 L["Myth"] = "Mythe"
 L["Hero"] = "Héros"
 L["Champion"] = "Champion"
@@ -448,3 +450,6 @@ L["TW_Weekly_Note"] = "Terminer 5 donjons des Marcheurs du temps pour la cache h
 -- UI Timer Labels
 L["Timer_Live"] = "LIVE · "
 L["Timer_Next"] = "Next · "
+
+-- Currency row tooltip
+L["Prof_Catchup_Note"] = "Weekly catch-up knowledge earned from quests and activities"

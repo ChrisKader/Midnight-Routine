@@ -47,25 +47,11 @@ MR:RegisterModule({
             end
         end
 
-        if C_QuestLog.IsQuestFlaggedCompleted(93744) then
-
-            for _, b in ipairs(UATV_BRANCHES) do
-                if C_QuestLog.IsQuestFlaggedCompleted(b.quest) then
-                    db[mod.key]["uatv_branch_name"] = b.name
-                    break
-                end
-            end
-            if not db[mod.key]["uatv_branch_name"] then
-                db[mod.key]["uatv_branch_name"] = L["Weekly_UnknownActivity"]
-            end
-        else
-
-            db[mod.key]["uatv_branch_name"] = nil
-            for _, b in ipairs(UATV_BRANCHES) do
-                if C_QuestLog.IsOnQuest(b.quest) then
-                    db[mod.key]["uatv_branch_name"] = b.name
-                    break
-                end
+        db[mod.key]["uatv_branch_name"] = nil
+        for _, b in ipairs(UATV_BRANCHES) do
+            if C_QuestLog.IsOnQuest(b.quest) then
+                db[mod.key]["uatv_branch_name"] = b.name
+                break
             end
         end
 
@@ -79,23 +65,20 @@ MR:RegisterModule({
             questIds = { 89507 },
         },
         {
-            key      = "lost_legends",
-            label    = L["Weekly_Legends_Label"],
-            max      = 1,
-            questIds = { 89268 },
+            key   = "lost_legends",
+            label = L["Weekly_Legends_Label"],
+            max   = 1,
         },
         {
-            key      = "high_esteem",
-            label    = L["Weekly_Esteem_Label"],
-            max      = 1,
-            questIds = { 91629 },
+            key   = "high_esteem",
+            label = L["Weekly_Esteem_Label"],
+            max   = 1,
         },
         {
             key      = "saltherils_soiree",
             label    = L["Weekly_Soiree_Label"],
             max      = 1,
             note     = L["Weekly_Soiree_Note"],
-            questIds = { 93889, 91966 },
             tooltipFunc = function(tip)
                 local variants = {
                     { quest = 93889, name = "Midnight: Saltheril's Soiree" },
@@ -139,40 +122,22 @@ MR:RegisterModule({
             max      = 1,
             note     = L["Weekly_Unity_Note"],
 
-            questIds = { 93744, 93909, 93911, 93912, 93910 },
             tooltipFunc = function(tip)
-                local BRANCHES = {
+                local activeName = nil
+                for _, b in ipairs({
                     { quest = 93909, name = L["Unity_Delves"]   },
                     { quest = 93911, name = L["Unity_Dungeons"] },
                     { quest = 93912, name = L["Unity_Raids"]    },
                     { quest = 93910, name = L["Unity_PvP"]      },
-                }
-
-                local metaDone   = C_QuestLog.IsQuestFlaggedCompleted(93744)
-                local activeName = nil
-                local doneBranch = nil
-
-                for _, b in ipairs(BRANCHES) do
-                    if C_QuestLog.IsQuestFlaggedCompleted(b.quest) then
-                        doneBranch = b.name
+                }) do
+                    if C_QuestLog.IsOnQuest(b.quest) then
+                        activeName = b.name
                         break
                     end
                 end
 
-                if not doneBranch then
-                    for _, b in ipairs(BRANCHES) do
-                        if C_QuestLog.IsOnQuest(b.quest) then
-                            activeName = b.name
-                            break
-                        end
-                    end
-                end
-
                 tip:AddLine(" ")
-                if metaDone or doneBranch then
-                    tip:AddLine(L["Tooltip_Done_Completed"], 1, 1, 1)
-                    tip:AddLine("  " .. (doneBranch or L["Tooltip_ActivityCompleted"]), 0.4, 0.85, 0.4)
-                elseif activeName then
+                if activeName then
                     tip:AddLine(L["Tooltip_Active_Progress"], 1, 1, 1)
                     tip:AddLine("  " .. activeName, 1, 0.9, 0.3)
                 else

@@ -140,6 +140,8 @@ L["Vault_Dungeon_Label"]     = "|cff00ccffDungeon:|r"
 L["Vault_TT_Dungeon_Header"] = "Dungeons diese Woche: %d"
 L["Vault_World_Label"]       = "|cffc8956cWelt:|r"
 L["Vault_TT_World_Header"]   = "Weltaktivitäten diese Woche: %d"
+L["Vault_TT_Slot_Unlocked"]  = "  Slot %d  |cff40e080✓ Unlocked|r"
+L["Vault_TT_Slot_Progress"]  = "  Slot %d  %d / %d needed"
 L["Myth"] = "Myth"
 L["Hero"] = "Hero"
 L["Champion"] = "Champion"
@@ -462,3 +464,6 @@ L["TW_Weekly_Note"] = "Schließe 5 Zeitwanderungs-Dungeons für die wöchentlich
 -- UI Timer Labels
 L["Timer_Live"] = "LIVE · "
 L["Timer_Next"] = "Next · "
+
+-- Currency row tooltip
+L["Prof_Catchup_Note"] = "Weekly catch-up knowledge earned from quests and activities"

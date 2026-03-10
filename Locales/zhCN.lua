@@ -139,6 +139,8 @@ L["Vault_Dungeon_Label"]     = "|cff00ccff地下城：|r"
 L["Vault_TT_Dungeon_Header"] = "本周地下城数：%d"
 L["Vault_World_Label"]       = "|cffc8956c世界：|r"
 L["Vault_TT_World_Header"]   = "本周世界活动数：%d"
+L["Vault_TT_Slot_Unlocked"]  = "  Slot %d  |cff40e080✓ Unlocked|r"
+L["Vault_TT_Slot_Progress"]  = "  Slot %d  %d / %d needed"
 L["Myth"] = "神话"
 L["Hero"] = "英雄"
 L["Champion"] = "勇士"
@@ -450,3 +452,6 @@ L["TW_Weekly_Note"] = "完成5个时空漫游地下城以获取周常宝箱"
 -- UI Timer Labels
 L["Timer_Live"] = "LIVE · "
 L["Timer_Next"] = "Next · "
+
+-- Currency row tooltip
+L["Prof_Catchup_Note"] = "Weekly catch-up knowledge earned from quests and activities"

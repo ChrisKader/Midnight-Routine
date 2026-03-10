@@ -354,6 +354,10 @@ local function WriteProgress(progress, modKey, rowKey, val, overrides)
 end
 
 function MR:Scan()
+    if self._scanSuppressedUntil and GetTime() < self._scanSuppressedUntil then
+        return
+    end
+
     local progress = self.db.char.progress
     local dirty    = false
 
@@ -443,22 +447,72 @@ function MR:Scan()
     if self.RefreshGatheringLocationsFrame then self:RefreshGatheringLocationsFrame() end
 end
 
+local TURN_IN_COMPLETIONS = {
+    [89268] = { mod = "s1_weekly",           row = "lost_legends"        },
+    [91629] = { mod = "s1_weekly",           row = "high_esteem"          },
+    [93889] = { mod = "s1_weekly",           row = "saltherils_soiree"    },
+    [91966] = { mod = "s1_weekly",           row = "saltherils_soiree"    },
+    [93909] = { mod = "s1_weekly",           row = "unity_against_void"   },
+    [93911] = { mod = "s1_weekly",           row = "unity_against_void"   },
+    [93912] = { mod = "s1_weekly",           row = "unity_against_void"   },
+    [93910] = { mod = "s1_weekly",           row = "unity_against_void"   },
+    [92365] = { mod = "midnight_activities", row = "stormarion_assault"   },
+    [94581] = { mod = "midnight_activities", row = "stormarion_assault"   },
+}
+
+local WEEKLY_RESET_SCHEDULE = {
+    [1] = { weekday = 3, hour = 3 }, 
+    [2] = { weekday = 4, hour = 3 }, 
+    [3] = { weekday = 3, hour = 3 }, 
+    [4] = { weekday = 4, hour = 3 }, 
+    [5] = { weekday = 4, hour = 3 }, 
+}
+
+function MR:GetLastResetTimestamp()
+    local region    = GetCurrentRegion() or 1
+    local resetInfo = WEEKLY_RESET_SCHEDULE[region]
+    if not resetInfo then return nil end
+
+    local cal = C_DateAndTime.GetCurrentCalendarTime()
+    if not cal then return nil end
+
+    local now                 = GetServerTime()
+    local secondsSinceMidnight = (cal.hour * 3600) + (cal.minute * 60) + (cal.second or 0)
+    local todayReset          = now - secondsSinceMidnight + (resetInfo.hour * 3600)
+    local diffDays            = ((cal.weekday - resetInfo.weekday) + 7) % 7
+    local candidate           = todayReset - (diffDays * 24 * 3600)
+
+    if candidate > now then candidate = candidate - (7 * 24 * 3600) end
+
+    return candidate
+end
+
 function MR:GetCurrentWeekKey()
-    local secondsUntilReset = C_DateAndTime.GetSecondsUntilWeeklyReset()
-    if not secondsUntilReset or secondsUntilReset <= 0 then return nil end
-    return math.floor((GetServerTime() + secondsUntilReset) / 604800)
+    return self:GetLastResetTimestamp() or 0
 end
 
 function MR:CheckWeeklyReset()
-    local currentWeek = self:GetCurrentWeekKey()
-    if not currentWeek then return end
-    if self.db.char.lastWeek ~= currentWeek then
-        self.db.char.lastWeek = currentWeek
+    local lastResetAt = self:GetLastResetTimestamp()
+    if not lastResetAt then return end
+
+    local prevResetAt = self.db.char.lastResetAt
+
+    if not prevResetAt then
+        self.db.char.lastResetAt = lastResetAt
+        return
+    end
+
+    if lastResetAt > prevResetAt + 300 then
         self:DoWeeklyReset()
     end
 end
 
 function MR:DoWeeklyReset()
+    local ts = self:GetLastResetTimestamp()
+    if ts then self.db.char.lastResetAt = ts end
+
+    self._scanSuppressedUntil = GetTime() + 15
+
     for _, mod in ipairs(self.modules) do
         if mod.resetType == "weekly" then
             self.db.char.progress[mod.key] = {}
@@ -468,7 +522,8 @@ function MR:DoWeeklyReset()
         end
     end
     self.db.char.raresKills = {}
-    self:Scan()
+    self:RefreshUI()
+    self:ScheduleTimer(function() self:Scan() end, 20)
     print(L["Weekly_Reset"])
 end
 
@@ -557,6 +612,23 @@ function MR:OnEnable()
     self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "OnSpellCast")
     self:RegisterEvent("ENCOUNTER_END",            "OnEncounterEnd")
     self:RegisterEvent("PLAYER_ENTERING_WORLD",    "OnEnteringWorld")
+
+    self:ScheduleRepeatingTimer("CheckWeeklyReset", 60)
+
+    if not self._questTurnInFrame then
+        local addon = self
+        local f = CreateFrame("Frame")
+        f:RegisterEvent("QUEST_TURNED_IN")
+        f:SetScript("OnEvent", function(_, _, questID)
+            local entry = TURN_IN_COMPLETIONS[questID]
+            if not entry or not addon.db then return end
+            local ch = addon.db.char
+            if not ch.progress[entry.mod] then ch.progress[entry.mod] = {} end
+            ch.progress[entry.mod][entry.row] = 1
+            addon:RefreshUI()
+        end)
+        self._questTurnInFrame = f
+    end
 end
 
 function MR:OnEnteringWorld()

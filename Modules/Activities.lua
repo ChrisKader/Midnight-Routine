@@ -13,7 +13,6 @@ MR:RegisterModule({
             label         = L["Act_Stormarion_Label"],
             max           = 1,
             note          = L["Act_Stormarion_Note"],
-            questIds      = { 92365, 94581 },
             timerEpoch    = 1772370083,
             timerInterval = 1800,
             timerDuration = 900,

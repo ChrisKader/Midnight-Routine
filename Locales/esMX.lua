@@ -139,6 +139,8 @@ L["Vault_Dungeon_Label"]     = "|cff00ccffMazmorra:|r"
 L["Vault_TT_Dungeon_Header"] = "Mazmorras esta semana: %d"
 L["Vault_World_Label"]       = "|cffc8956cMundo:|r"
 L["Vault_TT_World_Header"]   = "Actividades de mundo esta semana: %d"
+L["Vault_TT_Slot_Unlocked"]  = "  Slot %d  |cff40e080✓ Unlocked|r"
+L["Vault_TT_Slot_Progress"]  = "  Slot %d  %d / %d needed"
 L["Myth"] = "Mito"
 L["Hero"] = "Héroe"
 L["Champion"] = "Campeón"
@@ -450,3 +452,6 @@ L["TW_Weekly_Note"] = "Completa 5 mazmorras de Paseo en el Tiempo para el alijo 
 -- UI Timer Labels
 L["Timer_Live"] = "LIVE · "
 L["Timer_Next"] = "Next · "
+
+-- Currency row tooltip
+L["Prof_Catchup_Note"] = "Weekly catch-up knowledge earned from quests and activities"
