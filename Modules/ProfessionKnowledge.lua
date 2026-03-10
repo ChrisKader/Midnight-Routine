@@ -785,8 +785,8 @@ PopulateGatheringConfig = function(f)
     end
     local function Btn(lbl, fn) yOff = MR_OptionsBtn(body, yOff, lbl, fn, 184, P, cfgFs) end
 
-    SecLabel("DISPLAY")
-    Check("Lock Position",
+    SecLabel(L["Config_Display"])
+    Check(L["Config_LockPosition"],
         function() return db.gatheringLocked end,
         function(v)
             db.gatheringLocked = v
@@ -799,16 +799,14 @@ PopulateGatheringConfig = function(f)
                 RebuildGatheringLocationsFrame()
             end)
 
-    Gap(4); Divider()
-    SecLabel("SIZE & OPACITY")
-    Slider("WIDTH", MIN_W, MAX_W, 10,
+    Slider(L["WIDTH"], MIN_W, MAX_W, 10,
         function() return db.gatheringWidth or DEFAULT_W end,
         function(v)
             db.gatheringWidth = math.floor(v / 10) * 10
             RebuildGatheringLocationsFrame()
         end,
         0.80, 0.53, 0.20)
-    Slider("HEIGHT", MIN_H, MAX_H, 10,
+    Slider(L["HEIGHT"], MIN_H, MAX_H, 10,
         function() return db.gatheringHeight or DEFAULT_H end,
         function(v)
             db.gatheringHeight = math.floor(v / 10) * 10
@@ -818,7 +816,7 @@ PopulateGatheringConfig = function(f)
         end,
         0.60, 0.80, 0.40)
     local syncFs = MR.db.profile.syncWindowFontSize
-    Slider("FONT SIZE", 7, 16, 1,
+    Slider(L["Config_FontSize"], 7, 16, 1,
         function() return db.gatheringFontSize or 9 end,
         function(v) db.gatheringFontSize = math.floor(v); RebuildGatheringLocationsFrame(); PopulateGatheringConfig(f) end,
         0.78, 0.55, 0.16, syncFs)
@@ -857,7 +855,7 @@ PopulateGatheringConfig = function(f)
         yOff = yOff - 22
     end
 
-    Slider("BACKGROUND", 0, 1, 0.05,
+    Slider(L["BACKGROUND"], 0, 1, 0.05,
         function() return db.gatheringAlpha or 1.0 end,
         function(v)
             db.gatheringAlpha = math.floor(v * 20) / 20
@@ -869,7 +867,7 @@ PopulateGatheringConfig = function(f)
             end
         end,
         0.40, 0.40, 0.40)
-    Slider("SCALE", 0.5, 2.0, 0.05,
+    Slider(L["SCALE"], 0.5, 2.0, 0.05,
         function() return db.gatheringScale or 1.0 end,
         function(v)
             db.gatheringScale = v
@@ -878,7 +876,7 @@ PopulateGatheringConfig = function(f)
         0.45, 0.22, 0.82, MR.db.profile.syncWindowScale)
 
     Gap(4); Divider()
-    SecLabel("PROFESSION COLORS")
+    SecLabel(L["Config_ProfessionColors"])
 
     for _, profession in ipairs(PROFESSIONS) do
         if HasProfessionLearned(profession.skillLine) then
@@ -901,7 +899,7 @@ PopulateGatheringConfig = function(f)
                     if nameLbl then nameLbl:SetTextColor(dr, dg, db2) end
                     return dr, dg, db2
                 end,
-                profession.label .. " color  -  right-click to reset")
+                profession.label .. L["Color_Reset_Hint"])
             swatch:SetPoint("RIGHT", rowFr, "RIGHT", 0, 0)
 
             nameLbl = rowFr:CreateFontString(nil, "OVERLAY")
@@ -917,7 +915,7 @@ PopulateGatheringConfig = function(f)
     end
 
     Gap(4); Divider()
-    Btn("Reset All Colors", function()
+    Btn(L["Config_ResetColors"], function()
         MR.db.profile.gatheringProfColors = {}
         RebuildGatheringLocationsFrame()
         PopulateGatheringConfig(f)

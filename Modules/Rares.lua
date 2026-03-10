@@ -590,7 +590,7 @@ BuildRaresFrame = function()
             local row      = math.floor((i - 1) / cols)
             local xPos     = ROW_PAD + col * colW
             local yPos     = -(row * ROW_H) - 5
-            local zoneIdx  = zoneIdxList[i]  
+            local zoneIdx  = zoneIdxList[i] 
 
             local dot = body:CreateTexture(nil, "ARTWORK")
             dot:SetSize(DOT_SIZE, DOT_SIZE)
@@ -896,7 +896,6 @@ PopulateRaresConfig = function(f)
         function(v) db.raresHideKilled = v; RebuildRaresFrame() end)
 
     Gap(4); Divider()
-    SecLabel(L["Config_SizeOpacity"])
     Slider(L["WIDTH"], MIN_W, MAX_W, 10,
         function() return db.raresWidth or DEFAULT_W end,
         function(v)

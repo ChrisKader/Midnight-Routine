@@ -69,6 +69,7 @@ local DEFAULTS = {
         headerColors    = {},
         syncWindowScale     = false,
         syncWindowFontSize  = false,
+        peekOnHover         = false,
     },
     char = {
         progress = {},
@@ -558,6 +559,9 @@ function MR:OnEnteringWorld()
     end
     if not shouldHideFrames and self.db.profile.gatheringLocOpen and self.EnsureGatheringLocationsShown then
         self:ScheduleTimer(function() self:EnsureGatheringLocationsShown() end, 1.9)
+    end
+    if self.db.profile.peekOnHover and self.ApplyPeekOnHover then
+        self:ScheduleTimer(function() self:ApplyPeekOnHover(true) end, 2.5)
     end
     self:ScheduleTimer(function()
         self:CheckWeeklyReset()

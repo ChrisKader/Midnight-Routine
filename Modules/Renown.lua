@@ -467,19 +467,18 @@ PopulateRenownConfig = function(f)
         function(v) db.renownShowLevel = v; RefreshRenownFrame() end)
 
     Gap(4); Divider()
-    SecLabel(L["Config_SizeOpacity"])
-    Slider("WIDTH", 200, 400, 10,
+    Slider(L["WIDTH"], 200, 400, 10,
         function() return db.renownWidth or 280 end,
         function(v)
             db.renownWidth = math.floor(v/10)*10
             if renownFrame then renownFrame:SetWidth(db.renownWidth) end
         end,
         0.16, 0.78, 0.75)
-    Slider("BAR HEIGHT", 10, 30, 1,
+    Slider(L["Config_BarHeight"], 10, 30, 1,
         function() return db.renownBarH or 18 end,
         function(v) db.renownBarH = math.floor(v); RebuildRenownFrame() end,
         0.85, 0.65, 0.10)
-    Slider("BACKGROUND", 0, 1, 0.05,
+    Slider(L["BACKGROUND"], 0, 1, 0.05,
         function() return db.renownAlpha or 1.0 end,
         function(v)
             db.renownAlpha = v
@@ -501,7 +500,7 @@ PopulateRenownConfig = function(f)
             end
         end,
         0.40, 0.40, 0.40)
-    Slider("SCALE", 0.5, 2.0, 0.05,
+    Slider(L["SCALE"], 0.5, 2.0, 0.05,
         function() return db.renownScale or 1.0 end,
         function(v)
             db.renownScale = v
@@ -707,13 +706,13 @@ PopulateRenownConfig = function(f)
     end
 
     Gap(4); Divider()
-    SecLabel("RESETS")
-    Btn("Reset All Colors", function()
+    SecLabel(L["RESETS"])
+    Btn(L["Config_ResetColors"], function()
         db.renownColors = {}
         RebuildRenownFrame()
         PopulateRenownConfig(f)
     end)
-    Btn("Reset Faction Order", function()
+    Btn(L["Config_ResetFactionOrder"], function()
         db.renownOrder = {}
         PopulateRenownConfig(f)
         RebuildRenownFrame()

@@ -17,6 +17,64 @@ local PADDING       = 6
 
 local GetFontSize = MR_GetFontSize
 
+local PEEK_ALPHA_IDLE   = 0.0   
+local PEEK_ALPHA_HOVER  = 1.0    
+local PEEK_FADE_IN      = 6.0    
+local PEEK_FADE_OUT     = 2.5   
+
+local function PeekFrameList()
+    local list = {}
+    if MR.frame                  then list[#list+1] = MR.frame end
+    if MR.raresFrame             then list[#list+1] = MR.raresFrame end
+    if MR.renownFrame            then list[#list+1] = MR.renownFrame end
+    if MR.gatheringLocationsFrame then list[#list+1] = MR.gatheringLocationsFrame end
+    return list
+end
+
+local function AnyFrameHovered()
+    for _, f in ipairs(PeekFrameList()) do
+        if f:IsShown() and f:IsMouseOver() then return true end
+    end
+    return false
+end
+
+local peekUpdater = CreateFrame("Frame")
+peekUpdater:Hide()
+
+function MR:ApplyPeekOnHover(enable)
+    self.db.profile.peekOnHover = enable
+
+    if not enable then
+        peekUpdater:SetScript("OnUpdate", nil)
+        peekUpdater:Hide()
+        for _, f in ipairs(PeekFrameList()) do
+            if f:IsShown() then f:SetAlpha(1.0) end
+        end
+        return
+    end
+
+    peekUpdater:Show()
+    peekUpdater:SetScript("OnUpdate", function(_, dt)
+        local target = AnyFrameHovered() and PEEK_ALPHA_HOVER or PEEK_ALPHA_IDLE
+        local rate   = (target > PEEK_ALPHA_IDLE) and PEEK_FADE_IN or PEEK_FADE_OUT
+        for _, f in ipairs(PeekFrameList()) do
+            if f:IsShown() then
+                local cur = f:GetAlpha()
+                if math.abs(cur - target) < 0.005 then
+                    f:SetAlpha(target)
+                else
+                    local step = rate * dt
+                    if cur < target then
+                        f:SetAlpha(math.min(cur + step, target))
+                    else
+                        f:SetAlpha(math.max(cur - step, target))
+                    end
+                end
+            end
+        end
+    end)
+end
+
 local function RecalcLayout()
     local fs = GetFontSize()
     ROW_HEIGHT    = math.max(14, fs + 7)
@@ -994,6 +1052,9 @@ function MR:PopulateConfigFrame(f)
                 MR:UpdateInstanceFrameVisibility()
             end
         end)
+    Checkbox(L["Config_PeekOnHover"],
+        function() return MR.db.profile.peekOnHover end,
+        function(v) MR:ApplyPeekOnHover(v) end)
 
     Gap(6)
     yOff = MR_OptionsSlider(body, yOff, L["WIDTH"], PANEL_MIN_WIDTH, PANEL_MAX_WIDTH, 10,
