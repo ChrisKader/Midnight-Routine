@@ -112,8 +112,8 @@ local PROFESSIONS = {
             { zone = 2395, x = 39.3, y = 45.4, itemID = 238577, questID = 89072 }, -- Half-Baked Techniques
             { zone = 2395, x = 48.3, y = 75.6, itemID = 238574, questID = 89069 }, -- Spare Ink
             { zone = 2437, x = 40.5, y = 49.4, itemID = 238573, questID = 89068 }, -- Leather-Bound Techniques
-            { zone = 2413, x = 52.7, y = 50.0, itemID = 238576, questID = 89070 }, -- Leftover Sanguithorn Pigment
-            { zone = 2413, x = 52.4, y = 52.6, itemID = 238575, questID = 89071 }, -- Intrepid Explorer's Marker
+            { zone = 2413, x = 52.4, y = 52.6, itemID = 238575, questID = 89070 }, -- Intrepid Explorer's Marker
+            { zone = 2413, x = 52.7, y = 50.0, itemID = 238576, questID = 89071 }, -- Leftover Sanguithorn Pigment
             { zone = 2444, x = 60.7, y = 84.1, itemID = 238572, questID = 89067 }, -- Void-Touched Quill
         },
     },
