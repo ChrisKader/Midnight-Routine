@@ -78,6 +78,7 @@ local DEFAULTS = {
         manualOverrides = {},
         welcomeSeen = false,
         raresKills = {},
+        lastDailyAt = 0,
     },
 }
 
@@ -472,6 +473,41 @@ local WEEKLY_RESET_SCHEDULE = {
     [5] = { weekday = 4, hour = 3 }, 
 }
 
+function MR:GetLastDailyTimestamp()
+    local cal = C_DateAndTime.GetCurrentCalendarTime()
+    if not cal then return nil end
+    local now = GetServerTime()
+    local secondsSinceMidnight = (cal.hour * 3600) + (cal.minute * 60) + (cal.second or 0)
+    return now - secondsSinceMidnight
+end
+
+function MR:CheckDailyReset()
+    local lastDailyAt = self:GetLastDailyTimestamp()
+    if not lastDailyAt then return end
+    local prevDailyAt = self.db.char.lastDailyAt
+    if not prevDailyAt or prevDailyAt == 0 then
+        self.db.char.lastDailyAt = lastDailyAt
+        return
+    end
+    if lastDailyAt > prevDailyAt + 300 then
+        self:DoDailyReset()
+    end
+end
+
+function MR:DoDailyReset()
+    local ts = self:GetLastDailyTimestamp()
+    if ts then self.db.char.lastDailyAt = ts end
+    for _, mod in ipairs(self.modules) do
+        if mod.resetType == "daily" then
+            self.db.char.progress[mod.key] = {}
+            if self.db.char.manualOverrides then
+                self.db.char.manualOverrides[mod.key] = nil
+            end
+        end
+    end
+    self:RefreshUI()
+end
+
 function MR:GetLastResetTimestamp()
     local region    = GetCurrentRegion() or 1
     local resetInfo = WEEKLY_RESET_SCHEDULE[region]
@@ -618,6 +654,7 @@ function MR:OnEnable()
     self:RegisterEvent("PLAYER_ENTERING_WORLD",    "OnEnteringWorld")
 
     self:ScheduleRepeatingTimer("CheckWeeklyReset", 60)
+    self:ScheduleRepeatingTimer("CheckDailyReset",  60)
 
     if not self._questTurnInFrame then
         local addon = self
@@ -678,6 +715,7 @@ function MR:OnEnteringWorld()
     end
     self:ScheduleTimer(function()
         self:CheckWeeklyReset()
+        self:CheckDailyReset()
         self:RefreshPlayerProfessions()
         self:RefreshUI()
         self:UpdateInstanceFrameVisibility()

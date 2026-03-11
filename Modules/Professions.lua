@@ -165,6 +165,64 @@ MR:RegisterModule({
     },
 })
 
+local LURE_ITEM_ZULAMAN   = 238653  
+local LURE_ITEM_HARANDAR  = 238654  
+local LURE_ITEM_VOIDSTORM = 238655  
+local LURE_ITEM_GRAND     = 238656  
+
+local function KnowsLureRecipe(itemID)
+    if not itemID then return true end
+    if C_TradeSkillUI and C_TradeSkillUI.GetRecipeInfoForItemID then
+        return C_TradeSkillUI.GetRecipeInfoForItemID(itemID) ~= nil
+    end
+    return true
+end
+
+MR:RegisterModule({
+    key           = "skin_lures",
+    profSkillLine = 2917,
+    label         = L["Skin_Lures_Title"],
+    labelColor    = "#c8a060",
+    resetType     = "daily",
+    defaultOpen   = false,
+    rows = {
+        {
+            key   = "lure_eversong",
+            label = L["Skin_Lure_Eversong"],
+            max   = 1,
+            note  = L["Skin_Lure_Eversong_Note"],
+        },
+        {
+            key       = "lure_zulaman",
+            label     = L["Skin_Lure_Zulaman"],
+            max       = 1,
+            note      = L["Skin_Lure_Zulaman_Note"],
+            isVisible = function() return KnowsLureRecipe(LURE_ITEM_ZULAMAN) end,
+        },
+        {
+            key       = "lure_harandar",
+            label     = L["Skin_Lure_Harandar"],
+            max       = 1,
+            note      = L["Skin_Lure_Harandar_Note"],
+            isVisible = function() return KnowsLureRecipe(LURE_ITEM_HARANDAR) end,
+        },
+        {
+            key       = "lure_voidstorm",
+            label     = L["Skin_Lure_Voidstorm"],
+            max       = 1,
+            note      = L["Skin_Lure_Voidstorm_Note"],
+            isVisible = function() return KnowsLureRecipe(LURE_ITEM_VOIDSTORM) end,
+        },
+        {
+            key       = "lure_grand",
+            label     = L["Skin_Lure_Grand"],
+            max       = 1,
+            note      = L["Skin_Lure_Grand_Note"],
+            isVisible = function() return KnowsLureRecipe(LURE_ITEM_GRAND) end,
+        },
+    },
+})
+
 MR:RegisterModule({
     key           = "prof_tailoring",
     profSkillLine = 2918,

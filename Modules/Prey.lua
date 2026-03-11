@@ -62,7 +62,6 @@ MR:RegisterModule({
             key        = "prey_remnants",
             label      = L["Prey_Remnants_Label"],
             currencyId = 3392,
-            max        = 99999,
             noMax      = true,
             note       = L["Prey_Remnants_Note"],
         },

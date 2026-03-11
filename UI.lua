@@ -95,12 +95,14 @@ local function ApplyTheme()
         f:SetBackdropColor(0, 0, 0, 0)
         f:SetBackdropBorderColor(0.3, 0.6, 0.8, 0.25 * v)
         if MR._titleBar    then MR._titleBar:SetBackdropColor(0.02, 0.18, 0.35, 0.45 * v) end
+        if MR._titleBar    then MR._titleBar:SetBackdropBorderColor(0.10, 0.28, 0.35, 0.25 * v) end
         if MR._scrollBg    then MR._scrollBg:SetColorTexture(0, 0, 0, 0) end
         if MR._titleAccent then MR._titleAccent:SetAlpha(v) end
     else
         f:SetBackdropColor(COL.bg[1], COL.bg[2], COL.bg[3], COL.bg[4] * v)
         f:SetBackdropBorderColor(0.15, 0.15, 0.2, v)
         if MR._titleBar    then MR._titleBar:SetBackdropColor(0.05, 0.12, 0.22, v) end
+        if MR._titleBar    then MR._titleBar:SetBackdropBorderColor(0.10, 0.28, 0.35, v) end
         if MR._scrollBg    then MR._scrollBg:SetColorTexture(COL.bg[1], COL.bg[2], COL.bg[3], 0.96 * v) end
         if MR._titleAccent then MR._titleAccent:SetAlpha(v) end
     end
@@ -556,7 +558,7 @@ function MR:RefreshUI()
                 local rowVisible = not row.isVisible or row.isVisible()
                 if rowVisible and MR:IsRowEnabled(mod.key, row.key) then
                     allTotal = allTotal + 1
-                    if MR:GetProgress(mod.key, row.key) >= row.max then allDone = allDone + 1 end
+                    if row.max and MR:GetProgress(mod.key, row.key) >= row.max then allDone = allDone + 1 end
                 end
             end
         end
@@ -655,7 +657,7 @@ function MR:BuildSection(mod, yOff, xOff, colW, col)
         local rowVisible = not row.isVisible or row.isVisible()
         if rowVisible and MR:IsRowEnabled(mod.key, row.key) then
             secTotal = secTotal + 1
-            if MR:GetProgress(mod.key, row.key) >= row.max then secDone = secDone + 1 end
+            if row.max and MR:GetProgress(mod.key, row.key) >= row.max then secDone = secDone + 1 end
         end
     end
     local allDone = (secTotal > 0) and (secDone == secTotal)
@@ -667,7 +669,7 @@ function MR:BuildSection(mod, yOff, xOff, colW, col)
 
     local hdrBg = hdrFrame:CreateTexture(nil, "BACKGROUND")
     hdrBg:SetAllPoints()
-    hdrBg:SetColorTexture(0, 0, 0, MR.db.profile.transparentMode and 0.45 or 0.55)
+    hdrBg:SetColorTexture(0, 0, 0, (MR.db.profile.transparentMode and 0.45 or 0.55) * (MR.db.profile.frameAlpha or 1.0))
 
     local hdrHover = hdrFrame:CreateTexture(nil, "BORDER")
     hdrHover:SetAllPoints()
@@ -676,12 +678,13 @@ function MR:BuildSection(mod, yOff, xOff, colW, col)
     local accent = hdrFrame:CreateTexture(nil, "ARTWORK")
     accent:SetPoint("TOPLEFT")
     accent:SetSize(2, HEADER_HEIGHT)
+    local accentA = MR.db.profile.frameAlpha or 1.0
     if allDone then
-        accent:SetColorTexture(COL.complete[1], COL.complete[2], COL.complete[3], 1)
+        accent:SetColorTexture(COL.complete[1], COL.complete[2], COL.complete[3], accentA)
     else
         local customColor = MR:GetHeaderColor(mod.key)
         local lr,lg,lb = hex(customColor or mod.labelColor or "#ffffff")
-        accent:SetColorTexture(lr, lg, lb, 1)
+        accent:SetColorTexture(lr, lg, lb, accentA)
     end
 
     local lbl = hdrFrame:CreateFontString(nil, "OVERLAY")
@@ -805,9 +808,7 @@ function MR:BuildRow(mod, row, done, yOff, collapsed, xOff, colW)
         hover:SetColorTexture(1, 1, 1, 0.04)
         if row.currencyId then
             GameTooltip:SetOwner(rowFrame, "ANCHOR_RIGHT")
-            GameTooltip:SetText(row.label, 1, 1, 1, 1, true)
-            local note = row.note or L["Prof_Catchup_Note"]
-            if note then GameTooltip:AddLine(note, 0.7, 0.7, 0.7, true) end
+            GameTooltip:SetCurrencyByID(row.currencyId)
             GameTooltip:AddLine(L["Tooltip_AutoBlizzard"], 0.4, 0.8, 1)
             GameTooltip:Show()
         else
@@ -886,10 +887,14 @@ function MR:BuildRow(mod, row, done, yOff, collapsed, xOff, colW)
         local dot = rowFrame:CreateTexture(nil, "ARTWORK")
         dot:SetSize(6, 6)
         dot:SetPoint("LEFT", rowFrame, "LEFT", PADDING, 0)
-        SetDotColor(dot, done, row.max)
+        if row.max then
+            SetDotColor(dot, done, row.max)
+        else
+            dot:SetColorTexture(0.3, 0.3, 0.3, 1)
+        end
     end
 
-    local isCurrencyRow = row.currencyId and row.max and row.max > 0
+    local isCurrencyRow = row.currencyId and row.max and row.max > 0 and not row.noMax
     local lblRightOff   = isCurrencyRow and -96 or -52
 
     local lbl = rowFrame:CreateFontString(nil, "OVERLAY")
@@ -938,7 +943,11 @@ function MR:BuildRow(mod, row, done, yOff, collapsed, xOff, colW)
         walletFS:SetText(string.format("|cffaaaaaa(%d)|r", wallet))
     else
         countFS:SetText(row.noMax and tostring(done) or string.format("%d / %d", done, row.max))
-        countFS:SetTextColor(countColor(done, row.max))
+        if row.noMax then
+            countFS:SetTextColor(0.8, 0.8, 0.8)
+        else
+            countFS:SetTextColor(countColor(done, row.max))
+        end
     end
 
     if row.vaultLabel then
@@ -1208,6 +1217,7 @@ function MR:PopulateConfigFrame(f)
         function(v)
             MR.db.profile.frameAlpha = v
             ApplyTheme()
+            MR:RefreshUI()
         end,
         0.40, 0.40, 0.40, 8, nil, cfgFs)
 
