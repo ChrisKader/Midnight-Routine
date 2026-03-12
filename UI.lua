@@ -293,7 +293,7 @@ function MR:BuildUI()
     closeBtn:SetPoint("RIGHT", titleBar, "RIGHT", -BTN_MARGIN, 0)
     closeBtn:SetScript("OnClick", function()
         f:Hide()
-        MR.db.profile.panelOpen = false
+        MR.db.char.panelOpen = false
     end)
 
     local minBtn = MakeHeaderBtn(
@@ -1110,12 +1110,12 @@ function MR:PopulateConfigFrame(f)
     Gap(4); Divider()
     SectionLabel(L["OPTIONS"])
     Checkbox(L["Config_HideWhenCompleted"],
-        function() return MR.db.profile.hideComplete end,
+        function() return MR.db.char.hideComplete end,
         function(v)
-            MR.db.profile.hideComplete = v
+            MR.db.char.hideComplete = v
             for _, mod in ipairs(MR.modules) do
-                if MR.db.profile.modules[mod.key] then
-                    MR.db.profile.modules[mod.key].hideComplete = nil
+                if MR.db.char.modules[mod.key] then
+                    MR.db.char.modules[mod.key].hideComplete = nil
                 end
             end
             MR:RefreshUI()
@@ -1757,7 +1757,7 @@ function MR:PopulateConfigFrame(f)
         MR:PopulateConfigFrame(f)
     end)
     Btn(L["Config_ResetOrder"], function()
-        MR.db.profile.moduleOrder = {}
+        MR.db.char.moduleOrder = {}
         MR._orderedModulesCache = nil
         MR:RefreshUI()
         MR:PopulateConfigFrame(f)

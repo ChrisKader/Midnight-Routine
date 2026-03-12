@@ -41,10 +41,10 @@ local minimapObject = LDB:NewDataObject("MidnightRoutine", {
             if MR.frame then
                 if MR.frame:IsShown() then
                     MR.frame:Hide()
-                    MR.db.profile.panelOpen = false
+                    MR.db.char.panelOpen = false
                 else
                     MR.frame:Show()
-                    MR.db.profile.panelOpen = true
+                    MR.db.char.panelOpen = true
                 end
             end
         elseif button == "RightButton" then

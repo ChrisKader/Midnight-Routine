@@ -12,17 +12,13 @@ local DEFAULTS = {
         locked          = false,
         scale           = 1.0,
         frameAlpha      = 1.0,
-        hideComplete    = true,
         hideFramesInInstances = false,
         transparentMode = false,
         width           = 260,
         height          = 400,
         fontSize        = 11,
-        panelOpen       = true,
         minimap         = { hide = false },
         firstSeen       = false,
-        modules         = {},
-        moduleOrder     = {},
         position        = { point = "CENTER", x = 0, y = 0 },
         renownOpen          = false,
         raresOpen           = false,
@@ -79,6 +75,10 @@ local DEFAULTS = {
         welcomeSeen = false,
         raresKills = {},
         lastDailyAt = 0,
+        hideComplete = true,
+        panelOpen    = true,
+        modules      = {},
+        moduleOrder  = {},
     },
 }
 
@@ -164,7 +164,7 @@ end
 
 function MR:GetOrderedModules()
     if self._orderedModulesCache then return self._orderedModulesCache end
-    local saved = self.db.profile.moduleOrder
+    local saved = self.db.char.moduleOrder
     if not saved or #saved == 0 then
         self._orderedModulesCache = self.modules
         return self.modules
@@ -182,7 +182,7 @@ function MR:GetOrderedModules()
 end
 
 function MR:SetModuleOrder(orderedKeys)
-    self.db.profile.moduleOrder  = orderedKeys
+    self.db.char.moduleOrder  = orderedKeys
     self._orderedModulesCache = nil
 end
 
@@ -191,12 +191,12 @@ function MR:IsModuleEnabled(key)
     if mod and mod.profSkillLine and not self.playerProfessions[mod.profSkillLine] then
         return false
     end
-    local s = self.db.profile.modules[key]
+    local s = self.db.char.modules[key]
     return not (s and s.enabled == false)
 end
 
 function MR:IsModuleOpen(key)
-    local s = self.db.profile.modules[key]
+    local s = self.db.char.modules[key]
     if s == nil then
         local mod = self.moduleByKey[key]
         return not mod or mod.defaultOpen ~= false
@@ -205,40 +205,40 @@ function MR:IsModuleOpen(key)
 end
 
 function MR:SetModuleOpen(key, open)
-    if not self.db.profile.modules[key] then self.db.profile.modules[key] = {} end
-    self.db.profile.modules[key].open = open
+    if not self.db.char.modules[key] then self.db.char.modules[key] = {} end
+    self.db.char.modules[key].open = open
 end
 
 function MR:SetModuleEnabled(key, enabled)
-    if not self.db.profile.modules[key] then self.db.profile.modules[key] = {} end
-    self.db.profile.modules[key].enabled = enabled
+    if not self.db.char.modules[key] then self.db.char.modules[key] = {} end
+    self.db.char.modules[key].enabled = enabled
     self:RefreshUI()
 end
 
 function MR:IsModuleHideComplete(modKey)
-    local s = self.db.profile.modules[modKey]
+    local s = self.db.char.modules[modKey]
     if s and s.hideComplete ~= nil then return s.hideComplete end
-    return self.db.profile.hideComplete
+    return self.db.char.hideComplete
 end
 
 function MR:SetModuleHideComplete(modKey, value)
-    if not self.db.profile.modules[modKey] then self.db.profile.modules[modKey] = {} end
-    self.db.profile.modules[modKey].hideComplete = value
+    if not self.db.char.modules[modKey] then self.db.char.modules[modKey] = {} end
+    self.db.char.modules[modKey].hideComplete = value
     self:RefreshUI()
 end
 
 function MR:IsRowEnabled(modKey, rowKey)
-    local s = self.db.profile.modules[modKey]
+    local s = self.db.char.modules[modKey]
     if not s or not s.hiddenRows then return true end
     return s.hiddenRows[rowKey] ~= false
 end
 
 function MR:SetRowEnabled(modKey, rowKey, enabled)
-    if not self.db.profile.modules[modKey] then self.db.profile.modules[modKey] = {} end
-    if not self.db.profile.modules[modKey].hiddenRows then
-        self.db.profile.modules[modKey].hiddenRows = {}
+    if not self.db.char.modules[modKey] then self.db.char.modules[modKey] = {} end
+    if not self.db.char.modules[modKey].hiddenRows then
+        self.db.char.modules[modKey].hiddenRows = {}
     end
-    self.db.profile.modules[modKey].hiddenRows[rowKey] = enabled and true or false
+    self.db.char.modules[modKey].hiddenRows[rowKey] = enabled and true or false
 end
 
 function MR:GetHeaderColor(modKey)
@@ -677,7 +677,7 @@ function MR:OnEnteringWorld()
     self:BuildSpellIndex()
 
     if not self.db.profile.firstSeen then
-        self.db.profile.panelOpen  = false
+        self.db.char.panelOpen     = false
         self.db.profile.renownOpen = false
     end
 
@@ -686,7 +686,7 @@ function MR:OnEnteringWorld()
     else
         self:RefreshUI()
     end
-    if self.frame and self.db.profile.panelOpen == false then
+    if self.frame and self.db.char.panelOpen == false then
         self.frame:Hide()
     end
 
@@ -776,10 +776,10 @@ SlashCmdList["MIDROUTE"] = function(msg)
         print(L["Frame_Unlocked"])
     elseif msg == "hide"    then
         if MR.frame then MR.frame:Hide() end
-        MR.db.profile.panelOpen = false
+        MR.db.char.panelOpen = false
     elseif msg == "show"    then
         if MR.frame then MR.frame:Show() end
-        MR.db.profile.panelOpen = true
+        MR.db.char.panelOpen = true
     elseif msg == "minimap" then
         local newHide = not (MR.db.profile.minimap and MR.db.profile.minimap.hide)
         MR:SetMinimapHidden(newHide)

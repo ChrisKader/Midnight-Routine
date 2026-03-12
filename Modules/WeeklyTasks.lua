@@ -14,9 +14,10 @@ MR:RegisterModule({
             { quest = 92063, unlock = 94390, name = L["SA_Hunter"]               },
             { quest = 92139, unlock = 95435, name = L["SA_Shade"]                  },
             { quest = 92145, unlock = 92848, name = L["SA_Drink"]      },
-            { quest = 93013, unlock = 94391, name = L["SA_Push"]             },
+            { quest = 94391, unlock = 94391, name = L["SA_Push"]             },
             { quest = 93244, unlock = 94795, name = L["SA_Agents"]            },
             { quest = 93438, unlock = 94743, name = L["SA_Precision"]              },
+            { quest = 82157, unlock = 82157, name = L["SA_Colossals"]           },
         }
 
         local UATV_BRANCHES = {
@@ -230,7 +231,7 @@ MR:RegisterModule({
             max      = 1,
             note     = L["Weekly_SA_Note"],
 
-            questIds = { 91390, 91796, 92063, 92139, 92145, 93013, 93244, 93438 },
+            questIds = { 91390, 91796, 92063, 92139, 92145, 94391, 93244, 93438, 82157 },
             tooltipFunc = function(tip)
                 local assignments = {
                     { quest = 91390, unlock = 94865, name = L["SA_Temple"] },
@@ -238,9 +239,10 @@ MR:RegisterModule({
                     { quest = 92063, unlock = 94390, name = L["SA_Hunter"] },
                     { quest = 92139, unlock = 95435, name = L["SA_Shade"] },
                     { quest = 92145, unlock = 92848, name = L["SA_Drink"] },
-                    { quest = 93013, unlock = 94391, name = L["SA_Push"] },
+                    { quest = 94391, unlock = 94391, name = L["SA_Push"] },
                     { quest = 93244, unlock = 94795, name = L["SA_Agents"] },
                     { quest = 93438, unlock = 94743, name = L["SA_Precision"] },
+                    { quest = 82157, unlock = 82157, name = L["SA_Colossals"] },
                 }
 
                 local activeAssignment  = nil

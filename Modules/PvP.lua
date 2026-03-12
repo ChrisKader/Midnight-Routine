@@ -10,10 +10,9 @@ local CURRENCY_BLOODY_TOKEN = 2123
 
 local QUEST_SPARKS_ZULAMAN        = 93424
 local QUEST_SPARKS_HARANDAR       = 93425
-local QUEST_PRESERVING_BATTLE     = 80184
-local QUEST_PRESERVING_SOLO       = 80185
-local QUEST_PRESERVING_SKIRMISHES = 80187
-local QUEST_PRESERVING_ARENAS     = 80188
+local QUEST_SPARKS_VOIDSTORM      = 93426
+local QUEST_PREPARING_BATTLE      = 89354
+local QUEST_SOMETHING_DIFFERENT   = 47148
 local QUEST_EARLY_TRAINING        = 94835
 
 MR:RegisterModule({
@@ -59,11 +58,12 @@ MR:RegisterModule({
             label    = L["PvP_Sparks_Label"],
             max      = 1,
             note     = L["PvP_Sparks_Note"],
-            questIds = { QUEST_SPARKS_ZULAMAN, QUEST_SPARKS_HARANDAR },
+            questIds = { QUEST_SPARKS_ZULAMAN, QUEST_SPARKS_HARANDAR, QUEST_SPARKS_VOIDSTORM },
             tooltipFunc = function(tip)
                 local variants = {
-                    { quest = QUEST_SPARKS_ZULAMAN,  name = L["PvP_Sparks_ZA"] },
-                    { quest = QUEST_SPARKS_HARANDAR, name = L["PvP_Sparks_Harandar"] },
+                    { quest = QUEST_SPARKS_ZULAMAN,   name = L["PvP_Sparks_ZA"] },
+                    { quest = QUEST_SPARKS_HARANDAR,  name = L["PvP_Sparks_Harandar"] },
+                    { quest = QUEST_SPARKS_VOIDSTORM, name = L["PvP_Sparks_Voidstorm"] },
                 }
 
                 local completedName = nil
@@ -98,32 +98,18 @@ MR:RegisterModule({
             end,
         },
         {
-            key      = "preserving_solo",
-            label    = L["PvP_Solo_Label"],
+            key      = "preparing_battle",
+            label    = L["PvP_Preparing_Label"],
             max      = 1,
-            note     = L["PvP_Solo_Note"],
-            questIds = { QUEST_PRESERVING_SOLO },
+            note     = L["PvP_Preparing_Note"],
+            questIds = { QUEST_PREPARING_BATTLE },
         },
         {
-            key      = "preserving_skirmishes",
-            label    = L["PvP_Skirmishes_Label"],
+            key      = "something_different",
+            label    = L["PvP_Brawl_Label"],
             max      = 1,
-            note     = L["PvP_Skirmishes_Note"],
-            questIds = { QUEST_PRESERVING_SKIRMISHES },
-        },
-        {
-            key      = "preserving_arenas",
-            label    = L["PvP_Arenas_Label"],
-            max      = 1,
-            note     = L["PvP_Arenas_Note"],
-            questIds = { QUEST_PRESERVING_ARENAS },
-        },
-        {
-            key      = "preserving_battle",
-            label    = L["PvP_Battle_Label"],
-            max      = 1,
-            note     = L["PvP_Battle_Note"],
-            questIds = { QUEST_PRESERVING_BATTLE },
+            note     = L["PvP_Brawl_Note"],
+            questIds = { QUEST_SOMETHING_DIFFERENT },
         },
         {
             key      = "early_training",
