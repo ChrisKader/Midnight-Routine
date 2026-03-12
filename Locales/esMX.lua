@@ -257,10 +257,10 @@ L["PvP_Sparks_ZA"] = "Chispas de Guerra: Zul'Aman"
 L["PvP_Sparks_Harandar"] = "Chispas de Guerra: Harandar"
 L["PvP_Sparks_Voidstorm"] = "Chispas de Guerra: Tormenta del Vacío"
 L["Tooltip_No_Sparks"] = "|cffaaaaaa? No hay variante de Chispas activa.|r"
-L["PvP_Preparing_Label"] = true
-L["PvP_Preparing_Note"] = true
-L["PvP_Brawl_Label"] = true
-L["PvP_Brawl_Note"] = true
+L["PvP_Preparing_Label"] = "|cffcc3333Preparing for Battle:|r"
+L["PvP_Preparing_Note"] = "Kill 20 Void Creatures & shoot 5 with turrets in Slayer's Rise\nRewards: 500 Honor - 1,000 Slayer's Duellum"
+L["PvP_Brawl_Label"] = "|cffcc3333Something Different:|r"
+L["PvP_Brawl_Note"] = "Win a PvP Brawl\nRewards: Mark of Honor - 250g"
 L["PvP_Training_Label"] = "|cffcc3333Early Morning Training:|r"
 L["PvP_Training_Note"] = "Complete 3 Battlegrounds — week 1 of 4-week Hero gear chain\nRewards: Hero's Trove + Novice Combatant's Medallion"
 
