@@ -268,10 +268,10 @@ L["PvP_Sparks_ZA"] = "Funken des Krieges: Zul'Aman"
 L["PvP_Sparks_Harandar"] = "Funken des Krieges: Harandar"
 L["PvP_Sparks_Voidstorm"] = "Funken des Krieges: Leeresturm"
 L["Tooltip_No_Sparks"] = "|cffaaaaaa? Keine Funken-Variante aktiv.|r"
-L["PvP_Preparing_Label"] = true
-L["PvP_Preparing_Note"] = true
-L["PvP_Brawl_Label"] = true
-L["PvP_Brawl_Note"] = true
+L["PvP_Preparing_Label"] = "|cffcc3333Preparing for Battle:|r"
+L["PvP_Preparing_Note"] = "Kill 20 Void Creatures & shoot 5 with turrets in Slayer's Rise\nRewards: 500 Honor - 1,000 Slayer's Duellum"
+L["PvP_Brawl_Label"] = "|cffcc3333Something Different:|r"
+L["PvP_Brawl_Note"] = "Win a PvP Brawl\nRewards: Mark of Honor - 250g"
 L["PvP_Training_Label"] = "|cffcc3333Frühmorgendliches Training:|r"
 L["PvP_Training_Note"] = "Beende 3 Schlachtfelder — Woche 1 von 4-week Hero gear chain\nBelohnung: Schatz des Helden + Medaillion des Kampfnovizen"
 
@@ -490,3 +490,4 @@ L["Timer_Next"] = "Nächste in   ·  "
 
 -- Currency row tooltip
 L["Prof_Catchup_Note"] = "Wöchentliches Catch-up wissen aus Quests und Aktivitäten"
+
