@@ -901,6 +901,7 @@ end
 function MR:OnEnteringWorld()
     self:RefreshPlayerProfessions()
     self:BuildSpellIndex()
+    local temporarilyHidden = self._toggleRestoreState ~= nil
 
     if not self.db.profile.firstSeen then
         self.db.char.panelOpen     = false
@@ -915,6 +916,9 @@ function MR:OnEnteringWorld()
     if self.frame and self.db.char.panelOpen == false then
         self.frame:Hide()
     end
+    if temporarilyHidden then
+        self:HideManagedWindows()
+    end
 
     self:UpdateInstanceFrameVisibility()
     local shouldHideFrames = self._instanceFramesHidden == true
@@ -927,13 +931,13 @@ function MR:OnEnteringWorld()
             "COMBAT_TEXT_UPDATE",
         }, 1, "OnRenownUpdate")
     end
-    if not shouldHideFrames and self.db.profile.renownOpen and self.EnsureRenownShown then
+    if not shouldHideFrames and not temporarilyHidden and self.db.profile.renownOpen and self.EnsureRenownShown then
         self:ScheduleTimer(function() self:EnsureRenownShown() end, 1.5)
     end
-    if not shouldHideFrames and self.db.profile.raresOpen and self.EnsureRaresShown then
+    if not shouldHideFrames and not temporarilyHidden and self.db.profile.raresOpen and self.EnsureRaresShown then
         self:ScheduleTimer(function() self:EnsureRaresShown() end, 1.7)
     end
-    if not shouldHideFrames and self.db.profile.gatheringLocOpen and self.EnsureGatheringLocationsShown then
+    if not shouldHideFrames and not temporarilyHidden and self.db.profile.gatheringLocOpen and self.EnsureGatheringLocationsShown then
         self:ScheduleTimer(function() self:EnsureGatheringLocationsShown() end, 1.9)
     end
     if self.db.profile.peekOnHover and self.ApplyPeekOnHover then
@@ -1030,6 +1034,15 @@ SlashCmdList["MIDROUTE"] = function(msg)
                 MR.db.char.panelOpen = true
             end
         end
+    elseif msg == "main show" then
+        if not MR.frame and MR.BuildUI then
+            MR:BuildUI()
+        end
+        if MR.frame then MR.frame:Show() end
+        MR.db.char.panelOpen = true
+    elseif msg == "main hide" then
+        if MR.frame then MR.frame:Hide() end
+        MR.db.char.panelOpen = false
     elseif msg == "minimap" then
         local newHide = not (MR.db.profile.minimap and MR.db.profile.minimap.hide)
         MR:SetMinimapHidden(newHide)
@@ -1055,6 +1068,10 @@ SlashCmdList["MIDROUTE"] = function(msg)
     elseif msg == "rares"   then MR:ToggleRares()
     elseif msg == "rares config" then MR:ToggleRaresConfig()
     elseif msg == "gathering" then MR:ToggleGatheringLocations()
+    elseif msg == "sa debug" or msg == "sa_debug" then
+        if MR.DebugSpecialAssignments then
+            MR:DebugSpecialAssignments()
+        end
     elseif msg == "dmf" then
         MR.debugDMF = not MR.debugDMF
         if MR.debugDMF then

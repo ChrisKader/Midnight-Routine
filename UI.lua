@@ -1220,7 +1220,14 @@ function MR:BuildRow(mod, row, done, yOff, collapsed, xOff, colW, parent, widget
     countFS:SetPoint("RIGHT", rowFrame, "RIGHT", -4, 0)
     countFS:SetJustifyH("RIGHT")
 
-    if isCurrencyRow then
+    if row.countText then
+        countFS:SetText(row.countText)
+        if row.countColor then
+            countFS:SetTextColor(row.countColor[1], row.countColor[2], row.countColor[3])
+        else
+            countFS:SetTextColor(0.8, 0.8, 0.8)
+        end
+    elseif isCurrencyRow then
         local mdb    = MR.db and MR.db.char.progress[mod.key]
         local wallet = (mdb and mdb[row.key .. "_wallet"]) or done
 

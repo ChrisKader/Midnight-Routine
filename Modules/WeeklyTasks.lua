@@ -1,5 +1,131 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine")
 
+local SA_ASSIGNMENTS = {
+    { quest = 91390, unlock = 94865, name = L["SA_Temple"],    zone = 2395, zoneLabel = L["Zone_EversongWoods"] },
+    { quest = 91796, unlock = 94866, name = L["SA_Ours"],      zone = 2437, zoneLabel = L["Zone_ZulAman"] },
+    { quest = 92063, unlock = 94390, name = L["SA_Hunter"],    zone = 2413, zoneLabel = L["Zone_Harandar"] },
+    { quest = 92139, unlock = 95435, name = L["SA_Shade"],     zone = 2395, zoneLabel = L["Zone_EversongWoods"] },
+    { quest = 92145, unlock = 92848, name = L["SA_Drink"],     zone = 2393, zoneLabel = L["Faction_SilvermoonCourt"] },
+    { quest = 93013, unlock = 94391, name = L["SA_Push"],      zone = 2405, zoneLabel = L["Zone_Voidstorm"] },
+    { quest = 93244, unlock = 94795, name = L["SA_Agents"],    zone = 2405, zoneLabel = L["Zone_Voidstorm"] },
+    { quest = 93438, unlock = 94743, name = L["SA_Precision"], zone = 2413, zoneLabel = L["Zone_Harandar"] },
+}
+
+local UATV_BRANCHES = {
+    { quest = 93890, name = L["Unity_Abundance"]     },
+    { quest = 93767, name = L["Unity_Arcantina"]     },
+    { quest = 94457, name = L["Unity_Battlegrounds"] },
+    { quest = 93909, name = L["Unity_Delves"]        },
+    { quest = 93911, name = L["Unity_Dungeons"]      },
+    { quest = 93769, name = L["Unity_Housing"]       },
+    { quest = 93891, name = L["Unity_Legends"]       },
+    { quest = 93910, name = L["Unity_Prey"]          },
+    { quest = 93912, name = L["Unity_Raids"]         },
+    { quest = 93889, name = L["Unity_Soiree"]        },
+    { quest = 93892, name = L["Unity_Stormarion"]    },
+    { quest = 93913, name = L["Unity_WorldBoss"]     },
+    { quest = 93766, name = L["Unity_WorldQuests"]   },
+}
+
+local MIDNIGHT_MAP_IDS = {
+    [2393] = true,
+    [2395] = true,
+    [2405] = true,
+    [2413] = true,
+    [2437] = true,
+    [2576] = true,
+}
+
+local function IsPlayerInMidnightArea()
+    if not (C_Map and C_Map.GetBestMapForUnit and C_Map.GetMapInfo) then
+        return false
+    end
+
+    local mapId = C_Map.GetBestMapForUnit("player")
+    local checked = 0
+    while mapId and checked < 10 do
+        if MIDNIGHT_MAP_IDS[mapId] then
+            return true
+        end
+
+        local info = C_Map.GetMapInfo(mapId)
+        if not info or not info.parentMapID or info.parentMapID == 0 then
+            break
+        end
+
+        mapId = info.parentMapID
+        checked = checked + 1
+    end
+
+    return false
+end
+
+local function GetMapName(_, fallback)
+    return fallback
+end
+
+local function IsQuestCurrentlyActive(questId)
+    if not questId then
+        return false
+    end
+
+    if C_QuestLog.IsOnQuest(questId) then
+        return true
+    end
+
+    if C_QuestLog.IsWorldQuest and C_QuestLog.IsWorldQuest(questId) then
+        if C_TaskQuest and C_TaskQuest.GetQuestTimeLeftSeconds then
+            local timeLeft = C_TaskQuest.GetQuestTimeLeftSeconds(questId)
+            if timeLeft and timeLeft > 0 then
+                return true
+            end
+        end
+    end
+
+    return false
+end
+
+local function CollectSpecialAssignments()
+    local completed = {}
+    local active = {}
+    local allowActive = IsPlayerInMidnightArea()
+
+    for _, assignment in ipairs(SA_ASSIGNMENTS) do
+        local entry = {
+            quest = assignment.quest,
+            unlock = assignment.unlock,
+            name = assignment.name,
+            zone = assignment.zone,
+            zoneName = GetMapName(assignment.zone, assignment.zoneLabel),
+        }
+
+        if C_QuestLog.IsQuestFlaggedCompleted(assignment.quest) then
+            table.insert(completed, entry)
+        elseif allowActive and (IsQuestCurrentlyActive(assignment.quest) or IsQuestCurrentlyActive(assignment.unlock)) then
+            table.insert(active, entry)
+        end
+    end
+
+    return completed, active
+end
+
+function MR:DebugSpecialAssignments()
+    print("|cff2ae7c6[MidnightRoutine]|r Special Assignment debug:")
+
+    for _, assignment in ipairs(SA_ASSIGNMENTS) do
+        print(string.format(
+            "  %s | quest=%d completed=%s active=%s | unlock=%d active=%s | zone=%s",
+            assignment.name,
+            assignment.quest,
+            tostring(C_QuestLog.IsQuestFlaggedCompleted(assignment.quest)),
+            tostring(IsQuestCurrentlyActive(assignment.quest)),
+            assignment.unlock,
+            tostring(IsQuestCurrentlyActive(assignment.unlock)),
+            tostring(assignment.zoneLabel)
+        ))
+    end
+end
+
 MR:RegisterModule({
     key         = "s1_weekly",
     label       = L["Weekly_SeasonTitle"],
@@ -8,52 +134,67 @@ MR:RegisterModule({
     defaultOpen = true,
 
     onScan = function(mod)
-        local SA_ASSIGNMENTS = {
-            { quest = 91390, unlock = 94865, name = L["SA_Temple"] },
-            { quest = 91796, unlock = 94866, name = L["SA_Ours"]                 },
-            { quest = 92063, unlock = 94390, name = L["SA_Hunter"]               },
-            { quest = 92139, unlock = 95435, name = L["SA_Shade"]                  },
-            { quest = 92145, unlock = 92848, name = L["SA_Drink"]      },
-            { quest = 94391, unlock = 94391, name = L["SA_Push"]             },
-            { quest = 93244, unlock = 94795, name = L["SA_Agents"]            },
-            { quest = 93438, unlock = 94743, name = L["SA_Precision"]              },
-            { quest = 82157, unlock = 82157, name = L["SA_Colossals"]           },
-        }
-
-        local UATV_BRANCHES = {
-            { quest = 93890, name = L["Unity_Abundance"]     },
-            { quest = 93767, name = L["Unity_Arcantina"]     },
-            { quest = 94457, name = L["Unity_Battlegrounds"] },
-            { quest = 93909, name = L["Unity_Delves"]        },
-            { quest = 93911, name = L["Unity_Dungeons"]      },
-            { quest = 93769, name = L["Unity_Housing"]       },
-            { quest = 93891, name = L["Unity_Legends"]       },
-            { quest = 93910, name = L["Unity_Prey"]          },
-            { quest = 93912, name = L["Unity_Raids"]         },
-            { quest = 93889, name = L["Unity_Soiree"]        },
-            { quest = 93892, name = L["Unity_Stormarion"]    },
-            { quest = 93913, name = L["Unity_WorldBoss"]     },
-            { quest = 93766, name = L["Unity_WorldQuests"]   },
-        }
-
         local db = MR.db.char.progress
         if not db[mod.key] then db[mod.key] = {} end
+        db[mod.key]["special_assignment"] = 0
+        db[mod.key]["sa_active_name"] = nil
+        db[mod.key]["sa_active_names"] = nil
+        db[mod.key]["sa_active_zones"] = nil
 
-        for _, a in ipairs(SA_ASSIGNMENTS) do
-            if C_QuestLog.IsQuestFlaggedCompleted(a.quest) then
-                db[mod.key]["special_assignment"] = 1
-                db[mod.key]["sa_active_name"]     = a.name
-
-                break
-            end
+        local completedAssignments, activeAssignments = CollectSpecialAssignments()
+        if #completedAssignments > 0 then
+            db[mod.key]["special_assignment"] = 1
         end
 
-        if not db[mod.key]["sa_active_name"] then
-            for _, a in ipairs(SA_ASSIGNMENTS) do
-                if C_QuestLog.IsOnQuest(a.unlock) or C_QuestLog.IsQuestFlaggedCompleted(a.unlock) then
-                    db[mod.key]["sa_active_name"] = a.name
-                    break
+        local detectedAssignments = (#activeAssignments > 0) and activeAssignments or completedAssignments
+        if #detectedAssignments > 0 then
+            local names = {}
+            local zones = {}
+            for _, assignment in ipairs(detectedAssignments) do
+                names[#names + 1] = assignment.name
+                zones[#zones + 1] = assignment.zoneName or ""
+            end
+            db[mod.key]["sa_active_name"] = names[1]
+            db[mod.key]["sa_active_names"] = table.concat(names, " || ")
+            db[mod.key]["sa_active_zones"] = table.concat(zones, " || ")
+        end
+
+        for _, row in ipairs(mod.rows) do
+            if row.key == "special_assignment" then
+                if #activeAssignments > 0 then
+                    row.countText = string.format(
+                        L["Weekly_SA_Count_Active"] or "%d active",
+                        #activeAssignments
+                    )
+                    row.countColor = { 1, 0.9, 0.3 }
+                    row.note = string.format(
+                        L["Weekly_SA_Note_Multi"] or "Detected %d active special assignments this week. Hover for the full list and zones.",
+                        #activeAssignments
+                    )
+                elseif #completedAssignments > 1 then
+                    row.countText = string.format(
+                        L["Weekly_SA_Count_Completed"] or "%d done",
+                        #completedAssignments
+                    )
+                    row.countColor = { 0.4, 0.85, 0.4 }
+                    row.note = string.format(
+                        L["Weekly_SA_Note_CompletedMulti"] or "Completed %d special assignments this week. Hover for the full list and zones.",
+                        #completedAssignments
+                    )
+                elseif #completedAssignments == 1 then
+                    row.countText = L["Weekly_SA_Count_Complete"] or "Done"
+                    row.countColor = { 0.4, 0.85, 0.4 }
+                    row.note = L["Weekly_SA_Note"]
+                elseif #detectedAssignments == 1 then
+                    row.countText = L["Weekly_SA_Count_ActiveSingle"] or "Active"
+                    row.countColor = { 1, 0.9, 0.3 }
+                    row.note = L["Weekly_SA_Note"]
+                else
+                    row.countText = nil
+                    row.countColor = nil
+                    row.note = L["Weekly_SA_Note"]
                 end
+                break
             end
         end
 
@@ -231,58 +372,27 @@ MR:RegisterModule({
             max      = 1,
             note     = L["Weekly_SA_Note"],
 
-            questIds = { 91390, 91796, 92063, 92139, 92145, 94391, 93244, 93438, 82157 },
+            questIds = { 91390, 91796, 92063, 92139, 92145, 93013, 93244, 93438 },
             tooltipFunc = function(tip)
-                local assignments = {
-                    { quest = 91390, unlock = 94865, name = L["SA_Temple"] },
-                    { quest = 91796, unlock = 94866, name = L["SA_Ours"] },
-                    { quest = 92063, unlock = 94390, name = L["SA_Hunter"] },
-                    { quest = 92139, unlock = 95435, name = L["SA_Shade"] },
-                    { quest = 92145, unlock = 92848, name = L["SA_Drink"] },
-                    { quest = 94391, unlock = 94391, name = L["SA_Push"] },
-                    { quest = 93244, unlock = 94795, name = L["SA_Agents"] },
-                    { quest = 93438, unlock = 94743, name = L["SA_Precision"] },
-                    { quest = 82157, unlock = 82157, name = L["SA_Colossals"] },
-                }
-
-                local activeAssignment  = nil
-                local completedThisWeek = false
-                local objectiveText     = nil
-
-                for _, a in ipairs(assignments) do
-                    if C_QuestLog.IsQuestFlaggedCompleted(a.quest) then
-                        completedThisWeek = true
-                        activeAssignment  = a
-                        break
-                    end
-                end
-
-                if not completedThisWeek then
-                    for _, a in ipairs(assignments) do
-                        if C_QuestLog.IsOnQuest(a.unlock) or
-                           C_QuestLog.IsQuestFlaggedCompleted(a.unlock) then
-                            activeAssignment = a
-
-                            local objectives = C_QuestLog.GetQuestObjectives(a.unlock)
-                            if objectives and objectives[1] and objectives[1].text and
-                               objectives[1].text ~= "" then
-                                objectiveText = objectives[1].text
-                            end
-                            break
-                        end
-                    end
-                end
+                local completedAssignments, activeAssignments = CollectSpecialAssignments()
+                local zoneLabel = L["Tooltip_SA_Zone"] or "Zone:"
 
                 tip:AddLine(" ")
-                if completedThisWeek and activeAssignment then
-                    tip:AddLine(L["Tooltip_Done_Completed"], 1, 1, 1)
-                    tip:AddLine("  " .. activeAssignment.name, 0.4, 0.85, 0.4)
-                elseif activeAssignment then
+                if #activeAssignments > 0 then
                     tip:AddLine(L["Tooltip_Active_Week"], 1, 1, 1)
-                    tip:AddLine("  " .. activeAssignment.name, 1, 0.9, 0.3)
-                    if objectiveText then
-                        tip:AddLine(" ")
-                        tip:AddLine(objectiveText, 0.7, 0.7, 0.7, true)
+                    for _, assignment in ipairs(activeAssignments) do
+                        tip:AddLine("  " .. assignment.name, 1, 0.9, 0.3)
+                        if assignment.zoneName then
+                            tip:AddLine("    " .. zoneLabel .. " " .. assignment.zoneName, 0.65, 0.82, 1)
+                        end
+                    end
+                elseif #completedAssignments > 0 then
+                    tip:AddLine(L["Tooltip_Done_Completed"], 1, 1, 1)
+                    for _, assignment in ipairs(completedAssignments) do
+                        tip:AddLine("  " .. assignment.name, 0.4, 0.85, 0.4)
+                        if assignment.zoneName then
+                            tip:AddLine("    " .. zoneLabel .. " " .. assignment.zoneName, 0.55, 0.7, 0.55)
+                        end
                     end
                 else
                     tip:AddLine(L["Tooltip_No_Assignment"], 1, 1, 1)
