@@ -8,7 +8,7 @@ L["Frame_Unlocked"] = "|cff2ae7c6MidnightRoutine:|r Рамка разблоки�
 L["Minimap_Hidden"] = "|cff2ae7c6MidnightRoutine:|r Иконка миникарты скрыта."
 L["Minimap_Shown"] = "|cff2ae7c6MidnightRoutine:|r Иконка миникарты показана."
 L["Chat_Commands"] = "|cff2ae7c6/mr|r команды: show, hide, toggle, main, lock, unlock, reset, minimap, scale, scale <0.5-2>, big, small, welcome, renown, rares, gathering (Profession Knowledge), dmf (toggle Darkmoon test mode)"
-L["Config_ShowMainFrame"] = "Show Main Frame"
+L["Config_ShowMainFrame"] = "Показать главное окно"
 
 -- MinimapButton / Title (Кнопка миникарты / Заголовок)
 L["Title"] = "|cff2ae7c6Midnight Routine|r"
