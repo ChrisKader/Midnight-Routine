@@ -27,10 +27,10 @@ MR:RegisterModule({
             max        = 600,
         },
         {
-            key    = "restored_coffer_key",
-            label  = ItemLabel(263191, "Restored Coffer Key"),
-            itemId = 263191,
-            noMax  = true,
+            key        = "restored_coffer_key",
+            label      = L["Currency_RestoredCofferKey_Label"],
+            currencyId = 3028,
+            noMax      = true,
         },
         {
             key    = "spark_radiance",
