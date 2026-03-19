@@ -1,3 +1,6 @@
+local _, ns = ...
+local MR = ns.MR
+
 local cfgFrame
 local L = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine")
 
@@ -5,8 +8,23 @@ local PANEL_MIN_WIDTH  = 200
 local PANEL_MAX_WIDTH  = 500
 local PANEL_MIN_HEIGHT = 100
 local PANEL_MAX_HEIGHT = 800
-local FONT_ROWS    = MR_FONT_ROWS
-local FONT_HEADERS = MR_FONT_HEADERS
+local FONT_ROWS = ns.FONT_ROWS
+local FONT_HEADERS = ns.FONT_HEADERS
+local MakeBackdrop = ns.MakeBackdrop
+local StyledFrame = ns.StyledFrame
+local LeftAccent = ns.LeftAccent
+local TitleBar = ns.TitleBar
+local CloseButton = ns.CloseButton
+local RestoreFramePos = ns.RestoreFramePos
+local WrapColor = ns.WrapColor
+local SetDotColor = ns.SetDotColor
+local OptionsGap = ns.OptionsGap
+local OptionsDivider = ns.OptionsDivider
+local OptionsSectionLabel = ns.OptionsSectionLabel
+local OptionsCheckbox = ns.OptionsCheckbox
+local OptionsBtn = ns.OptionsBtn
+local OptionsSlider = ns.OptionsSlider
+local OptionsColorSwatch = ns.OptionsColorSwatch
 
 local FONT_SIZE_MIN = 7
 local FONT_SIZE_MAX = 20
@@ -19,7 +37,7 @@ local GetWindowLayoutValue
 local SetWindowLayoutValue
 local countColor
 
-local GetFontSize = MR_GetFontSize
+local GetFontSize = ns.GetFontSize
 
 local PEEK_ALPHA_IDLE   = 0.0    
 local PEEK_ALPHA_HOVER  = 1.0   
@@ -102,9 +120,9 @@ local function RecalcLayout()
     PADDING       = math.max(4, math.floor(fs * 0.55))
 end
 
-local hex = MR_HEX
+local hex = ns.Hex
 
-local COL = MR_COL
+local COL = ns.COLORS
 
 local function ApplyTheme()
     if not MR.frame then return end
@@ -416,7 +434,7 @@ function MR:RefreshWarbandBoard()
         local btn = CreateFrame("Button", nil, frame.charRail, "BackdropTemplate")
         btn:SetSize(194, 46)
         btn:SetPoint("TOPLEFT", frame.charRail, "TOPLEFT", 0, -((index - 1) * 50))
-        btn:SetBackdrop(MR_MakeBackdrop())
+        btn:SetBackdrop(MakeBackdrop())
 
         local isSelected = (selected.key == entry.key)
         local sr, sg, sb = WBClassColor(entry)
@@ -452,7 +470,7 @@ function MR:RefreshWarbandBoard()
         local hideBtn = CreateFrame("Button", nil, btn, "BackdropTemplate")
         hideBtn:SetSize(18, 18)
         hideBtn:SetPoint("RIGHT", btn, "RIGHT", -8, 0)
-        hideBtn:SetBackdrop(MR_MakeBackdrop())
+        hideBtn:SetBackdrop(MakeBackdrop())
         hideBtn:SetBackdropColor(0.07, 0.12, 0.18, 0.95)
         hideBtn:SetBackdropBorderColor(0.18, 0.30, 0.36, 0.95)
 
@@ -542,7 +560,7 @@ function MR:RefreshWarbandBoard()
         card:SetPoint("TOPLEFT", frame.detailContent, "TOPLEFT", 0, -yOff)
         card:SetSize(1, 1)
         card:SetWidth(detailWidth)
-        card:SetBackdrop(MR_MakeBackdrop())
+        card:SetBackdrop(MakeBackdrop())
         card:SetBackdropColor(0.03, 0.06, 0.11, 0.96)
         card:SetBackdropBorderColor(0.10, 0.18, 0.25, 1)
 
@@ -670,7 +688,7 @@ function MR:ToggleWarbandBoard()
     end
 
     if not self.altBoardFrame then
-        local frame = MR_StyledFrame(UIParent, "MRWarbandBoardFrame", "DIALOG", 30)
+        local frame = StyledFrame(UIParent, nil, "DIALOG", 30)
         frame:SetSize(760, 620)
         frame:SetScale(self.db.profile.scale or 1)
         local pos = GetWindowLayoutValue("warbandBoardPosition")
@@ -686,7 +704,7 @@ function MR:ToggleWarbandBoard()
         bgGlow:SetTexture("Interface\\Buttons\\WHITE8X8")
         bgGlow:SetColorTexture(0.02, 0.05, 0.10, 0.98)
 
-        local titleBar = MR_TitleBar(frame, 36)
+        local titleBar = TitleBar(frame, 36)
         titleBar:SetBackdropColor(0.04, 0.11, 0.20, 1)
         titleBar:SetScript("OnDragStart", function()
             frame:StartMoving()
@@ -696,7 +714,7 @@ function MR:ToggleWarbandBoard()
             local pt, _, rp, x, y = frame:GetPoint()
             SetWindowLayoutValue("warbandBoardPosition", { point = pt, relPoint = rp, x = x, y = y })
         end)
-        MR_LeftAccent(titleBar, 0.15, 0.85, 0.80)
+        LeftAccent(titleBar, 0.15, 0.85, 0.80)
 
         local title = titleBar:CreateFontString(nil, "OVERLAY")
         title:SetFont(FONT_HEADERS, math.max(12, GetFontSize() + 2), "OUTLINE")
@@ -715,13 +733,13 @@ function MR:ToggleWarbandBoard()
         summarySub:SetTextColor(0.62, 0.71, 0.79)
         summarySub:SetText("")
 
-        MR_CloseButton(titleBar, function() frame:Hide() end)
+        CloseButton(titleBar, function() frame:Hide() end)
 
         local leftPane = CreateFrame("Frame", nil, frame, "BackdropTemplate")
         leftPane:SetPoint("TOPLEFT", frame, "TOPLEFT", 12, -66)
         leftPane:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 12, 12)
         leftPane:SetWidth(210)
-        leftPane:SetBackdrop(MR_MakeBackdrop())
+        leftPane:SetBackdrop(MakeBackdrop())
         leftPane:SetBackdropColor(0.03, 0.07, 0.13, 0.95)
         leftPane:SetBackdropBorderColor(0.10, 0.18, 0.25, 1)
 
@@ -734,7 +752,7 @@ function MR:ToggleWarbandBoard()
         local showHiddenBtn = CreateFrame("Button", nil, leftPane, "BackdropTemplate")
         showHiddenBtn:SetSize(96, 18)
         showHiddenBtn:SetPoint("TOPRIGHT", leftPane, "TOPRIGHT", -8, -8)
-        showHiddenBtn:SetBackdrop(MR_MakeBackdrop())
+        showHiddenBtn:SetBackdrop(MakeBackdrop())
         showHiddenBtn:SetBackdropColor(0.05, 0.10, 0.18, 0.95)
         showHiddenBtn:SetBackdropBorderColor(0.18, 0.40, 0.45, 1)
 
@@ -771,7 +789,7 @@ function MR:ToggleWarbandBoard()
         local rightPane = CreateFrame("Frame", nil, frame, "BackdropTemplate")
         rightPane:SetPoint("TOPLEFT", leftPane, "TOPRIGHT", 12, 0)
         rightPane:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -12, 12)
-        rightPane:SetBackdrop(MR_MakeBackdrop())
+        rightPane:SetBackdrop(MakeBackdrop())
         rightPane:SetBackdropColor(0.02, 0.05, 0.10, 0.96)
         rightPane:SetBackdropBorderColor(0.10, 0.18, 0.25, 1)
 
@@ -779,7 +797,7 @@ function MR:ToggleWarbandBoard()
         hero:SetPoint("TOPLEFT", rightPane, "TOPLEFT", 12, -12)
         hero:SetPoint("TOPRIGHT", rightPane, "TOPRIGHT", -12, -12)
         hero:SetHeight(74)
-        hero:SetBackdrop(MR_MakeBackdrop())
+        hero:SetBackdrop(MakeBackdrop())
         hero:SetBackdropColor(0.05, 0.11, 0.20, 0.98)
         hero:SetBackdropBorderColor(0.12, 0.28, 0.35, 1)
 
@@ -862,9 +880,8 @@ local function ApplyFontSize(newSize)
 end
 MR.ApplyFontSize = ApplyFontSize
 
-local WC          = MR_WC
-countColor        = MR_CountColor
-local SetDotColor = MR_SetDotColor
+local WC = WrapColor
+countColor = ns.CountColor
 
 GetWindowLayoutValue = function(key)
     if MR and MR.GetWindowLayoutValue then
@@ -909,7 +926,7 @@ function MR:BuildUI()
     local w = MR.db.profile.width or 260
     local h = MR.db.profile.height or 400
 
-    local f = CreateFrame("Frame", "MidnightRoutineFrame", UIParent, "BackdropTemplate")
+    local f = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
     f:SetWidth(w)
     f:SetHeight(h)
     f:SetFrameStrata("MEDIUM")
@@ -1201,7 +1218,7 @@ function MR:BuildUI()
 
     titleCount:SetPoint("RIGHT", warbandBtn, "LEFT", -6, 0)
 
-    local scroll = CreateFrame("ScrollFrame", "MRScrollFrame", f)
+    local scroll = CreateFrame("ScrollFrame", nil, f)
     scroll:SetPoint("TOPLEFT",     titleBar, "BOTTOMLEFT",  0,  -1)
     scroll:SetPoint("BOTTOMRIGHT", f,        "BOTTOMRIGHT", -9,  4)
     scroll:EnableMouseWheel(true)
@@ -2221,7 +2238,7 @@ function MR:HideConfig()
 end
 
 function MR:BuildConfigFrame()
-    local f = CreateFrame("Frame", "MRConfigFrame", UIParent, "BackdropTemplate")
+    local f = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
     f:SetWidth(292)
     f:SetFrameStrata("HIGH")
     f:SetClampedToScreen(true)
@@ -2306,15 +2323,15 @@ function MR:PopulateConfigFrame(f)
         MR._cfgPage = activePage
     end
 
-    local function Gap(h)          yOff = MR_OptionsGap(body, yOff, h) end
-    local function Divider()       yOff = MR_OptionsDivider(body, yOff, 4) end
-    local function SectionLabel(t) yOff = MR_OptionsSectionLabel(body, yOff, t, 8, cfgFs) end
+    local function Gap(h)          yOff = OptionsGap(body, yOff, h) end
+    local function Divider()       yOff = OptionsDivider(body, yOff, 4) end
+    local function SectionLabel(t) yOff = OptionsSectionLabel(body, yOff, t, 8, cfgFs) end
     local function Checkbox(label, getVal, setVal, color)
         local r, g, b
         if color then r, g, b = hex(color) end
-        yOff = MR_OptionsCheckbox(body, yOff, label, getVal, setVal, r, g, b, 4, nil, cfgFs)
+        yOff = OptionsCheckbox(body, yOff, label, getVal, setVal, r, g, b, 4, nil, cfgFs)
     end
-    local function Btn(label, onClick) yOff = MR_OptionsBtn(body, yOff, label, onClick, math.max(192, contentW), 8, cfgFs) end
+    local function Btn(label, onClick) yOff = OptionsBtn(body, yOff, label, onClick, math.max(192, contentW), 8, cfgFs) end
     local function SetLayoutMode(enabled)
         MR.db.profile.characterWindowLayout = enabled
         MR:RefreshUI()
@@ -2329,15 +2346,15 @@ function MR:PopulateConfigFrame(f)
         end
         if MR.raresFrame then
             MR.raresFrame:ClearAllPoints()
-            MR_RestoreFramePos(MR.raresFrame, "raresPos", 580, 0)
+            RestoreFramePos(MR.raresFrame, "raresPos", 580, 0)
         end
         if MR.renownFrame then
             MR.renownFrame:ClearAllPoints()
-            MR_RestoreFramePos(MR.renownFrame, "renownPos", 300, 0)
+            RestoreFramePos(MR.renownFrame, "renownPos", 300, 0)
         end
         if MR.gatheringLocationsFrame then
             MR.gatheringLocationsFrame:ClearAllPoints()
-            MR_RestoreFramePos(MR.gatheringLocationsFrame, "gatheringLocPos", 860, 0)
+            RestoreFramePos(MR.gatheringLocationsFrame, "gatheringLocPos", 860, 0)
         end
         MR:PopulateConfigFrame(f)
     end
@@ -2506,19 +2523,19 @@ function MR:PopulateConfigFrame(f)
         Divider()
         SectionLabel(L["Config_Display"])
 
-        yOff = MR_OptionsSlider(body, yOff, L["WIDTH"], PANEL_MIN_WIDTH, PANEL_MAX_WIDTH, 10,
+        yOff = OptionsSlider(body, yOff, L["WIDTH"], PANEL_MIN_WIDTH, PANEL_MAX_WIDTH, 10,
             function() return MR.db.profile.width or 260 end,
             function(v) ApplyWidth(v); MR:PopulateConfigFrame(f) end,
             0.16, 0.78, 0.75, 8, nil, cfgFs)
 
         Gap(6)
-        yOff = MR_OptionsSlider(body, yOff, L["HEIGHT"], PANEL_MIN_HEIGHT, PANEL_MAX_HEIGHT, 10,
+        yOff = OptionsSlider(body, yOff, L["HEIGHT"], PANEL_MIN_HEIGHT, PANEL_MAX_HEIGHT, 10,
             function() return MR.db.profile.height or 400 end,
             function(v) ApplyHeight(v); MR:PopulateConfigFrame(f) end,
             0.16, 0.75, 0.78, 8, nil, cfgFs)
 
         Gap(6)
-        yOff = MR_OptionsSlider(body, yOff, L["Config_FontSize"], FONT_SIZE_MIN, FONT_SIZE_MAX, 1,
+        yOff = OptionsSlider(body, yOff, L["Config_FontSize"], FONT_SIZE_MIN, FONT_SIZE_MAX, 1,
             function() return GetFontSize() end,
             function(v)
                 if MR.db.profile.syncWindowFontSize then
@@ -2566,7 +2583,7 @@ function MR:PopulateConfigFrame(f)
         yOff = yOff - 40
 
         Gap(2)
-        yOff = MR_OptionsCheckbox(body, yOff, L["Config_SyncFontSize"],
+        yOff = OptionsCheckbox(body, yOff, L["Config_SyncFontSize"],
             function() return MR.db.profile.syncWindowFontSize end,
             function(v)
                 MR.db.profile.syncWindowFontSize = v
@@ -2576,7 +2593,7 @@ function MR:PopulateConfigFrame(f)
             0.78, 0.55, 0.16, 8, nil, cfgFs)
 
         Gap(4)
-        yOff = MR_OptionsSlider(body, yOff, L["BACKGROUND"], 0, 1, 0.05,
+        yOff = OptionsSlider(body, yOff, L["BACKGROUND"], 0, 1, 0.05,
             function() return MR.db.profile.frameAlpha or 1.0 end,
             function(v)
                 MR.db.profile.frameAlpha = v
@@ -2586,7 +2603,7 @@ function MR:PopulateConfigFrame(f)
             0.40, 0.40, 0.40, 8, nil, cfgFs)
 
         Gap(4)
-        yOff = MR_OptionsSlider(body, yOff, L["SCALE"], 0.5, 2.0, 0.05,
+        yOff = OptionsSlider(body, yOff, L["SCALE"], 0.5, 2.0, 0.05,
             function() return MR.db.profile.scale or 1.0 end,
             function(v)
                 if MR.db.profile.syncWindowScale then
@@ -2599,7 +2616,7 @@ function MR:PopulateConfigFrame(f)
             0.55, 0.22, 0.82, 8, nil, cfgFs)
 
         Gap(2)
-        yOff = MR_OptionsCheckbox(body, yOff, L["Config_SyncScale"],
+        yOff = OptionsCheckbox(body, yOff, L["Config_SyncScale"],
             function() return MR.db.profile.syncWindowScale end,
             function(v)
                 MR.db.profile.syncWindowScale = v
@@ -2660,7 +2677,7 @@ function MR:PopulateConfigFrame(f)
     local function BuildColorSwatch(parent, key, mod, anchorRight)
         local currentColor = MR:GetHeaderColor(key)
         local r, g, b = hex(currentColor or mod.labelColor or "#ffffff")
-        local swatch = MR_OptionsColorSwatch(parent, r, g, b,
+        local swatch = OptionsColorSwatch(parent, r, g, b,
             function(nr, ng, nb)
                 local hx = string.format("#%02x%02x%02x", nr*255, ng*255, nb*255)
                 MR:SetHeaderColor(key, hx)
@@ -3083,7 +3100,7 @@ function MR:PopulateConfigFrame(f)
                     end)
 
                     local rsr, rsg, rsb = hex(MR:GetRowColor(key, rkey) or MR:GetHeaderColor(key))
-                    local rowSwatch = MR_OptionsColorSwatch(rowFr, rsr, rsg, rsb,
+                    local rowSwatch = OptionsColorSwatch(rowFr, rsr, rsg, rsb,
                         function(nr, ng, nb)
                             local hx = string.format("#%02x%02x%02x", nr*255, ng*255, nb*255)
                             MR:SetRowColor(key, rkey, hx)

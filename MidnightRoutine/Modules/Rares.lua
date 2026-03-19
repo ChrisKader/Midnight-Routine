@@ -1,5 +1,22 @@
-local FONT_HEADERS = MR_FONT_HEADERS
-local FONT_ROWS    = MR_FONT_ROWS
+local _, ns = ...
+local MR = ns.MR
+
+local FONT_HEADERS = ns.FONT_HEADERS
+local FONT_ROWS = ns.FONT_ROWS
+local StyledFrame = ns.StyledFrame
+local RestoreFramePos = ns.RestoreFramePos
+local LeftAccent = ns.LeftAccent
+local TopAccent = ns.TopAccent
+local TitleBar = ns.TitleBar
+local CloseButton = ns.CloseButton
+local MakeBackdrop = ns.MakeBackdrop
+local OptionsGap = ns.OptionsGap
+local OptionsDivider = ns.OptionsDivider
+local OptionsSectionLabel = ns.OptionsSectionLabel
+local OptionsCheckbox = ns.OptionsCheckbox
+local OptionsSlider = ns.OptionsSlider
+local OptionsBtn = ns.OptionsBtn
+local OptionsColorSwatch = ns.OptionsColorSwatch
 local L = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine", true)
 
 local MAP_TO_ZONE_KEY = {
@@ -283,18 +300,18 @@ BuildRaresFrame = function()
     local cols       = (W >= 220) and COLS or 1
     local ROW_H      = GetRowH()
 
-    local f = MR_StyledFrame(UIParent, "MRRaresFrame", "MEDIUM", 10)
+    local f = StyledFrame(UIParent, nil, "MEDIUM", 10)
     f:SetSize(W, minimized and TITLE_H or H)
     f:SetBackdropColor(0.03, 0.02, 0.09, 0.97 * alpha)
     f:SetBackdropBorderColor(0.18, 0.10, 0.30, alpha)
-    MR_RestoreFramePos(f, "raresPos", 580, 0)
+    RestoreFramePos(f, "raresPos", 580, 0)
 
-    f.leftAccent = MR_LeftAccent(f, 0.55, 0.28, 0.95)
-    f.topAccent  = MR_TopAccent(f,  0.55, 0.28, 0.95)
+    f.leftAccent = LeftAccent(f, 0.55, 0.28, 0.95)
+    f.topAccent  = TopAccent(f, 0.55, 0.28, 0.95)
     if f.leftAccent then f.leftAccent:SetAlpha(alpha) end
     if f.topAccent  then f.topAccent:SetAlpha(alpha)  end
 
-    local titleBar = MR_TitleBar(f, TITLE_H)
+    local titleBar = TitleBar(f, TITLE_H)
     f.titleBar = titleBar
     titleBar:SetBackdropColor(0, 0, 0, 0)
     titleBar:SetClipsChildren(true)
@@ -311,7 +328,7 @@ BuildRaresFrame = function()
     titleIcon:SetTexture("Interface\\AddOns\\MidnightRoutine\\Media\\Icon")
     titleIcon:SetVertexColor(0.65, 0.38, 1.0, 1)
 
-    local closeBtn = MR_CloseButton(titleBar, function()
+    local closeBtn = CloseButton(titleBar, function()
         f:Hide()
         if raresCfgFrame then raresCfgFrame:Hide() end
         if MR.db then MR.db.profile.raresOpen = false end
@@ -345,7 +362,7 @@ BuildRaresFrame = function()
     local minBtn = CreateFrame("Button", nil, titleBar, "BackdropTemplate")
     minBtn:SetSize(16, 16)
     minBtn:SetPoint("RIGHT", gearBtn, "LEFT", -4, 0)
-    minBtn:SetBackdrop(MR_MakeBackdrop())
+    minBtn:SetBackdrop(MakeBackdrop())
     minBtn:SetBackdropColor(0.06, 0.12, 0.22, 0.85)
     minBtn:SetBackdropBorderColor(0.15, 0.35, 0.40, 0.9)
     local minLbl = minBtn:CreateFontString(nil, "OVERLAY")
@@ -560,7 +577,7 @@ BuildRaresFrame = function()
             zHdr:SetPoint("TOPLEFT",  content, "TOPLEFT",  OUTER_PAD, -yOff)
             zHdr:SetPoint("TOPRIGHT", content, "TOPRIGHT", -OUTER_PAD, -yOff)
             zHdr:SetHeight(ZONE_HDR_H)
-            zHdr:SetBackdrop(MR_MakeBackdrop())
+            zHdr:SetBackdrop(MakeBackdrop())
             zHdr:SetBackdropColor(cr*0.10, cg*0.10, cb*0.10, 0.98 * alpha)
             zHdr:SetBackdropBorderColor(cr*0.45, cg*0.45, cb*0.45, alpha)
 
@@ -581,7 +598,7 @@ BuildRaresFrame = function()
             zName:SetTextColor(cr, cg, cb)
             zName:SetText(zone.label)
 
-            zCount = zHdr:CreateFontString(nil, "OVERLAY")
+            local zCount = zHdr:CreateFontString(nil, "OVERLAY")
             zCount:SetFont(FONT_ROWS, 9, "OUTLINE")
             zCount:SetPoint("RIGHT", zHdr, "RIGHT", -8, 0)
             zCount:SetTextColor(0.5, 0.5, 0.5)
@@ -610,7 +627,7 @@ BuildRaresFrame = function()
         barBg:SetPoint("TOPLEFT",  content, "TOPLEFT",  OUTER_PAD,  -yOff)
         barBg:SetPoint("TOPRIGHT", content, "TOPRIGHT", -OUTER_PAD, -yOff)
         barBg:SetHeight(BAR_H)
-        barBg:SetBackdrop(MR_MakeBackdrop(false))
+        barBg:SetBackdrop(MakeBackdrop(false))
         barBg:SetBackdropColor(0.04, 0.04, 0.04, alpha)
 
         local barFill = barBg:CreateTexture(nil, "ARTWORK")
@@ -650,7 +667,7 @@ BuildRaresFrame = function()
         body:SetPoint("TOPLEFT",  content, "TOPLEFT",  OUTER_PAD,  -yOff)
         body:SetPoint("TOPRIGHT", content, "TOPRIGHT", -OUTER_PAD, -yOff)
         body:SetHeight(math.max(bodyH, 1))
-        body:SetBackdrop(MR_MakeBackdrop())
+        body:SetBackdrop(MakeBackdrop())
         body:SetBackdropColor(cr*0.04, cg*0.04, cb*0.04, 0.85 * alpha)
         body:SetBackdropBorderColor(cr*0.20, cg*0.20, cb*0.20, 0.65 * alpha)
         if isCollapsed then body:Hide() end
@@ -878,30 +895,30 @@ RefreshRaresFrame = function()
 end
 
 local function BuildRaresConfigFrame()
-    local f = CreateFrame("Frame", "MRRaresConfigFrame", UIParent, "BackdropTemplate")
+    local f = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
     f:SetWidth(224)
     f:SetFrameStrata("HIGH")
     f:SetFrameLevel(20)
     f:SetClampedToScreen(true)
     f:SetMovable(true)
-    f:SetBackdrop(MR_MakeBackdrop())
+    f:SetBackdrop(MakeBackdrop())
     f:SetBackdropColor(0.03, 0.02, 0.10, 0.98)
     f:SetBackdropBorderColor(0.30, 0.16, 0.55, 1)
     f:Hide()
 
-    MR_TopAccent(f, 0.55, 0.28, 0.95)
+    TopAccent(f, 0.55, 0.28, 0.95)
 
-    local tbar = MR_TitleBar(f, 22)
+    local tbar = TitleBar(f, 22)
     tbar:SetBackdropColor(0.07, 0.04, 0.14, 1)
     tbar:SetScript("OnDragStart", function() f:StartMoving() end)
     tbar:SetScript("OnDragStop",  function() f:StopMovingOrSizing() end)
 
     local ttitle = tbar:CreateFontString(nil, "OVERLAY")
-    ttitle:SetFont(MR_FONT_HEADERS, 10, "OUTLINE")
+    ttitle:SetFont(FONT_HEADERS, 10, "OUTLINE")
     ttitle:SetText(L["Rares_Config_Title"])
     ttitle:SetPoint("LEFT", tbar, "LEFT", 8, 0)
 
-    MR_CloseButton(tbar, function() f:Hide() end)
+    CloseButton(tbar, function() f:Hide() end)
     f.body = nil
     return f
 end
@@ -925,18 +942,18 @@ PopulateRaresConfig = function(f)
 
     local cfgFs = MR.db.profile.syncWindowFontSize and (db.raresFontSize or 9) or 9
 
-    local function Gap(h)      yOff = MR_OptionsGap(body, yOff, h) end
-    local function Divider()   yOff = MR_OptionsDivider(body, yOff, P) end
-    local function SecLabel(t) yOff = MR_OptionsSectionLabel(body, yOff, t, P, cfgFs) end
+    local function Gap(h)      yOff = OptionsGap(body, yOff, h) end
+    local function Divider()   yOff = OptionsDivider(body, yOff, P) end
+    local function SecLabel(t) yOff = OptionsSectionLabel(body, yOff, t, P, cfgFs) end
     local function Check(lbl, get, set, r, g, b)
-        yOff = MR_OptionsCheckbox(body, yOff, lbl, get, set,
+        yOff = OptionsCheckbox(body, yOff, lbl, get, set,
             r or 0.78, g or 0.78, b or 0.88, P,
             function() PopulateRaresConfig(f) end, cfgFs)
     end
     local function Slider(lbl, mn, mx, st, get, set, r, g, b, disabled)
-        yOff = MR_OptionsSlider(body, yOff, lbl, mn, mx, st, get, set, r, g, b, P, disabled, cfgFs)
+        yOff = OptionsSlider(body, yOff, lbl, mn, mx, st, get, set, r, g, b, P, disabled, cfgFs)
     end
-    local function Btn(lbl, fn) yOff = MR_OptionsBtn(body, yOff, lbl, fn, 184, P, cfgFs) end
+    local function Btn(lbl, fn) yOff = OptionsBtn(body, yOff, lbl, fn, 184, P, cfgFs) end
 
     SecLabel(L["Config_Display"])
     Check(L["Config_LockPosition"],
@@ -1001,7 +1018,7 @@ PopulateRaresConfig = function(f)
             local pb = CreateFrame("Button", nil, body, "BackdropTemplate")
             pb:SetSize(btnW - 2, 16)
             pb:SetPoint("TOPLEFT", body, "TOPLEFT", P + (i-1) * btnW, yOff - 2)
-            pb:SetBackdrop(MR_MakeBackdrop())
+            pb:SetBackdrop(MakeBackdrop())
             pb:SetBackdropColor(isActive and 0.12 or 0.05, isActive and 0.35 or 0.10, isActive and 0.32 or 0.18, syncFs and 0.4 or 1)
             pb:SetBackdropBorderColor(isActive and 0.25 or 0.18, isActive and 0.85 or 0.40, isActive and 0.70 or 0.45, syncFs and 0.4 or 1)
             local pfs = pb:CreateFontString(nil, "OVERLAY")
@@ -1068,7 +1085,7 @@ PopulateRaresConfig = function(f)
         rowFr:SetHeight(ROW_H2)
 
         local nameLbl
-        local swatch = MR_OptionsColorSwatch(rowFr, cr, cg, cb,
+        local swatch = OptionsColorSwatch(rowFr, cr, cg, cb,
             function(r, g, b)
                 SetZoneColor(zone, r, g, b)
                 if nameLbl then nameLbl:SetTextColor(r, g, b) end
@@ -1085,7 +1102,7 @@ PopulateRaresConfig = function(f)
         swatch:SetPoint("RIGHT", rowFr, "RIGHT", 0, 0)
 
         nameLbl = rowFr:CreateFontString(nil, "OVERLAY")
-        nameLbl:SetFont(MR_FONT_ROWS, 10, "OUTLINE")
+        nameLbl:SetFont(FONT_ROWS, 10, "OUTLINE")
         nameLbl:SetPoint("LEFT",  rowFr,  "LEFT",  0,  0)
         nameLbl:SetPoint("RIGHT", swatch, "LEFT", -4,  0)
         nameLbl:SetText(zone.label)

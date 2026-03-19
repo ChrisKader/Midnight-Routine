@@ -1,6 +1,12 @@
-local FONT_HEADERS = MR_FONT_HEADERS
-local FONT_ROWS    = MR_FONT_ROWS
-local hex          = MR_HEX
+local _, ns = ...
+local MR = ns.MR
+
+local FONT_HEADERS = ns.FONT_HEADERS
+local FONT_ROWS = ns.FONT_ROWS
+local hex = ns.Hex
+local StyledFrame = ns.StyledFrame
+local LeftAccent = ns.LeftAccent
+local TitleBar = ns.TitleBar
 local L            = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine")
 
 local pendingEnabled = {}
@@ -21,15 +27,15 @@ local function BuildWelcomeScreen()
     pendingRares    = MR.db and MR.db.profile.raresOpen      or false
     pendingGathering = MR.db and MR.db.profile.gatheringLocOpen or false
 
-    local f = MR_StyledFrame(UIParent, "MRWelcomeFrame", "FULLSCREEN_DIALOG", 200)
+    local f = StyledFrame(UIParent, nil, "FULLSCREEN_DIALOG", 200)
     f:SetSize(310, 10)
     f:SetPoint("CENTER", UIParent, "CENTER", 0, 30)
     f:SetBackdropColor(0.02, 0.04, 0.10, 0.98)
     f:SetBackdropBorderColor(0.16, 0.78, 0.75, 1)
 
-    MR_LeftAccent(f, 0.16, 0.78, 0.75)
+    LeftAccent(f, 0.16, 0.78, 0.75)
 
-    local titleBar = MR_TitleBar(f, 36)
+    local titleBar = TitleBar(f, 36)
     titleBar:SetBackdropColor(0.04, 0.10, 0.22, 1)
     titleBar:RegisterForDrag("LeftButton")
     titleBar:SetScript("OnDragStart", function() f:StartMoving() end)

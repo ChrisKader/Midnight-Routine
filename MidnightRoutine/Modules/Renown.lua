@@ -1,5 +1,23 @@
-local FONT_HEADERS = MR_FONT_HEADERS
-local FONT_ROWS    = MR_FONT_ROWS
+local _, ns = ...
+local MR = ns.MR
+
+local FONT_HEADERS = ns.FONT_HEADERS
+local FONT_ROWS = ns.FONT_ROWS
+local StyledFrame = ns.StyledFrame
+local RestoreFramePos = ns.RestoreFramePos
+local TopAccent = ns.TopAccent
+local LeftAccent = ns.LeftAccent
+local TitleBar = ns.TitleBar
+local CloseButton = ns.CloseButton
+local MakeBackdrop = ns.MakeBackdrop
+local Hex = ns.Hex
+local OptionsGap = ns.OptionsGap
+local OptionsDivider = ns.OptionsDivider
+local OptionsSectionLabel = ns.OptionsSectionLabel
+local OptionsCheckbox = ns.OptionsCheckbox
+local OptionsBtn = ns.OptionsBtn
+local OptionsSlider = ns.OptionsSlider
+local OptionsColorSwatch = ns.OptionsColorSwatch
 local L = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine", true)
 local GetOrderedFactions
 local GetFactionColor
@@ -70,16 +88,16 @@ local function BuildRenownFrame()
     end
     local totalH    = HEADER_H + PAD + (visCount * ROW_SPACE) + PAD
 
-    local f = MR_StyledFrame(UIParent, "MRRenownFrame", "MEDIUM", 10)
+    local f = StyledFrame(UIParent, nil, "MEDIUM", 10)
     f:SetSize(FRAME_W, totalH)
     f:SetBackdropColor(0.02, 0.03, 0.08, 0.97)
     f:SetBackdropBorderColor(0.55, 0.42, 0.08, 1)
 
-    MR_RestoreFramePos(f, "renownPos", 300, 0)
-    f.topAccent = MR_TopAccent(f)
-    f.leftAccent = MR_LeftAccent(f)
+    RestoreFramePos(f, "renownPos", 300, 0)
+    f.topAccent = TopAccent(f)
+    f.leftAccent = LeftAccent(f)
 
-    local titleBar = MR_TitleBar(f, HEADER_H)
+    local titleBar = TitleBar(f, HEADER_H)
     f.titleBar = titleBar
     titleBar:SetBackdropColor(0.06, 0.05, 0.02, 1)
     titleBar:SetScript("OnDragStart", function() f:StartMoving() end)
@@ -100,7 +118,7 @@ local function BuildRenownFrame()
     titleTxt:SetPoint("LEFT", titleIcon, "RIGHT", 7, 0)
     titleTxt:SetText(L["Renown_Title"])
 
-    local closeBtn = MR_CloseButton(titleBar, function()
+    local closeBtn = CloseButton(titleBar, function()
         f:Hide()
         if renownCfgFrame then renownCfgFrame:Hide() end
         if MR.db then MR.db.profile.renownOpen = false end
@@ -143,7 +161,7 @@ local function BuildRenownFrame()
         rowFrame:SetPoint("TOPLEFT",  f, "TOPLEFT",  PAD,       -yOff)
         rowFrame:SetPoint("TOPRIGHT", f, "TOPRIGHT", -PAD,      -yOff)
         rowFrame:SetHeight(ROW_SPACE - 8)
-        rowFrame:SetBackdrop(MR_MakeBackdrop())
+        rowFrame:SetBackdrop(MakeBackdrop())
         local rowAlpha = db.renownAlpha or 1.0
         if compact then rowAlpha = 1.0 end
         rowFrame:SetBackdropColor(cr * 0.08, cg * 0.08, cb * 0.08, 0.85 * rowAlpha)
@@ -171,7 +189,7 @@ local function BuildRenownFrame()
             barBg:SetPoint("BOTTOMRIGHT", rowFrame, "BOTTOMRIGHT", -6,  6)
         end
         barBg:SetHeight(BAR_H)
-        barBg:SetBackdrop(MR_MakeBackdrop())
+        barBg:SetBackdrop(MakeBackdrop())
         local barAlpha = db.renownAlpha or 1.0
         if compact then barAlpha = 1.0 end
         barBg:SetBackdropColor(0.04, 0.04, 0.04, barAlpha)
@@ -316,30 +334,30 @@ end
 local renownCfgFrame
 
 local function BuildRenownConfigFrame()
-    local f = CreateFrame("Frame", "MRRenownConfigFrame", UIParent, "BackdropTemplate")
+    local f = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
     f:SetWidth(230)
     f:SetFrameStrata("HIGH")
     f:SetFrameLevel(20)
     f:SetClampedToScreen(true)
     f:SetMovable(true)
-    f:SetBackdrop(MR_MakeBackdrop())
+    f:SetBackdrop(MakeBackdrop())
     f:SetBackdropColor(0.03, 0.04, 0.10, 0.98)
     f:SetBackdropBorderColor(0.55, 0.42, 0.08, 1)
     f:Hide()
 
-    MR_TopAccent(f)
+    TopAccent(f)
 
-    local tbar = MR_TitleBar(f, 22)
+    local tbar = TitleBar(f, 22)
     tbar:SetBackdropColor(0.06, 0.05, 0.02, 1)
     tbar:SetScript("OnDragStart", function() f:StartMoving() end)
     tbar:SetScript("OnDragStop",  function() f:StopMovingOrSizing() end)
 
     local ttitle = tbar:CreateFontString(nil, "OVERLAY")
-    ttitle:SetFont(MR_FONT_HEADERS, 11, "OUTLINE")
+    ttitle:SetFont(FONT_HEADERS, 11, "OUTLINE")
     ttitle:SetText(L["Renown_Config_Title"])
     ttitle:SetPoint("LEFT", tbar, "LEFT", 8, 0)
 
-    local closeBtn = MR_CloseButton(tbar, function() f:Hide() end)
+    local closeBtn = CloseButton(tbar, function() f:Hide() end)
 
     f.body = nil
     return f
@@ -388,7 +406,7 @@ GetFactionColor = function(faction)
     local db = MR.db and MR.db.profile or {}
     if db.renownColors and db.renownColors[faction.key] then
         local h = db.renownColors[faction.key]
-        return MR_HEX(h)
+        return Hex(h)
     end
     return faction.color[1], faction.color[2], faction.color[3]
 end
@@ -425,16 +443,16 @@ PopulateRenownConfig = function(f)
 
     local cfgFs = MR.db.profile.syncWindowFontSize and (db.renownFontSize or 9) or 9
 
-    local function Gap(h)          yOff = MR_OptionsGap(body, yOff, h) end
-    local function Divider()       yOff = MR_OptionsDivider(body, yOff, PAD) end
-    local function SecLabel(t)     yOff = MR_OptionsSectionLabel(body, yOff, t, PAD, cfgFs) end
+    local function Gap(h)          yOff = OptionsGap(body, yOff, h) end
+    local function Divider()       yOff = OptionsDivider(body, yOff, PAD) end
+    local function SecLabel(t)     yOff = OptionsSectionLabel(body, yOff, t, PAD, cfgFs) end
     local function Check(lbl, get, set, r, g, b)
-        yOff = MR_OptionsCheckbox(body, yOff, lbl, get, set, r, g, b, PAD,
+        yOff = OptionsCheckbox(body, yOff, lbl, get, set, r, g, b, PAD,
             function() PopulateRenownConfig(f) end, cfgFs)
     end
-    local function Btn(lbl, fn)    yOff = MR_OptionsBtn(body, yOff, lbl, fn, 184, PAD, cfgFs) end
+    local function Btn(lbl, fn)    yOff = OptionsBtn(body, yOff, lbl, fn, 184, PAD, cfgFs) end
     local function Slider(lbl, mn, mx, st, get, set, r, g, b, disabled)
-        yOff = MR_OptionsSlider(body, yOff, lbl, mn, mx, st, get, set, r, g, b, PAD, disabled, cfgFs)
+        yOff = OptionsSlider(body, yOff, lbl, mn, mx, st, get, set, r, g, b, PAD, disabled, cfgFs)
     end
 
     SecLabel(L["Config_Display"])
@@ -528,7 +546,7 @@ PopulateRenownConfig = function(f)
     dragGhost:SetBackdropBorderColor(0.9, 0.72, 0.1, 1)
     dragGhost:Hide()
     local dragGhostLbl = dragGhost:CreateFontString(nil, "OVERLAY")
-    dragGhostLbl:SetFont(MR_FONT_HEADERS, 10, "OUTLINE")
+    dragGhostLbl:SetFont(FONT_HEADERS, 10, "OUTLINE")
     dragGhostLbl:SetPoint("LEFT", dragGhost, "LEFT", 8, 0)
     dragGhostLbl:SetTextColor(1, 0.85, 0.2)
 
@@ -655,7 +673,7 @@ PopulateRenownConfig = function(f)
         grip:SetPoint("LEFT", rowFr, "LEFT", 2, 0)
         grip:RegisterForClicks("LeftButtonUp")
         local gripLbl = grip:CreateFontString(nil, "OVERLAY")
-        gripLbl:SetFont(MR_FONT_HEADERS, 11, "OUTLINE")
+        gripLbl:SetFont(FONT_HEADERS, 11, "OUTLINE")
         gripLbl:SetPoint("CENTER")
         gripLbl:SetText("=")
         gripLbl:SetTextColor(0.28, 0.22, 0.08)
@@ -677,7 +695,7 @@ PopulateRenownConfig = function(f)
         end)
         table.insert(_facRows, { key = faction.key, frame = rowFr, label = faction.label })
 
-        local swatch = MR_OptionsColorSwatch(rowFr, cr, cg, cb,
+        local swatch = OptionsColorSwatch(rowFr, cr, cg, cb,
             function(r, g, b)
                 SetFactionColor(faction, r, g, b)
                 nameLbl:SetTextColor(r, g, b)
@@ -701,7 +719,7 @@ PopulateRenownConfig = function(f)
         swatch:SetPoint("RIGHT", rowFr, "RIGHT", 0, 0)
 
         local nameLbl = rowFr:CreateFontString(nil, "OVERLAY")
-        nameLbl:SetFont(MR_FONT_ROWS, 10, "OUTLINE")
+        nameLbl:SetFont(FONT_ROWS, 10, "OUTLINE")
         nameLbl:SetPoint("LEFT",  visCheck, "RIGHT", 2, 0)
         nameLbl:SetPoint("RIGHT", swatch,   "LEFT",  -4, 0)
         nameLbl:SetText(faction.label)

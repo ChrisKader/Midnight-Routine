@@ -1,3 +1,6 @@
+local _, ns = ...
+local MR = ns.MR
+
 local LDB     = LibStub("LibDataBroker-1.1")
 local LDBIcon = LibStub("LibDBIcon-1.0")
 local L       = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine")

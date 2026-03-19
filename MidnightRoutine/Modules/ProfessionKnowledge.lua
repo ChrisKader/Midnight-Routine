@@ -1,5 +1,22 @@
-local FONT_HEADERS = MR_FONT_HEADERS
-local FONT_ROWS = MR_FONT_ROWS
+local _, ns = ...
+local MR = ns.MR
+
+local FONT_HEADERS = ns.FONT_HEADERS
+local FONT_ROWS = ns.FONT_ROWS
+local StyledFrame = ns.StyledFrame
+local RestoreFramePos = ns.RestoreFramePos
+local LeftAccent = ns.LeftAccent
+local TopAccent = ns.TopAccent
+local TitleBar = ns.TitleBar
+local CloseButton = ns.CloseButton
+local MakeBackdrop = ns.MakeBackdrop
+local OptionsGap = ns.OptionsGap
+local OptionsDivider = ns.OptionsDivider
+local OptionsSectionLabel = ns.OptionsSectionLabel
+local OptionsCheckbox = ns.OptionsCheckbox
+local OptionsSlider = ns.OptionsSlider
+local OptionsBtn = ns.OptionsBtn
+local OptionsColorSwatch = ns.OptionsColorSwatch
 local L = LibStub("AceLocale-3.0"):GetLocale("MidnightRoutine", true)
 
 local gatheringLocationsFrame
@@ -398,17 +415,17 @@ local function BuildGatheringLocationsFrame(isRetry)
     local minimized = db.gatheringMinimized or false
     gatheringMinimized = minimized
 
-    local frame = MR_StyledFrame(UIParent, "MRGatheringLocationsFrame", "MEDIUM", 10)
+    local frame = StyledFrame(UIParent, nil, "MEDIUM", 10)
     frame:SetSize(width, minimized and TITLE_H or height)
     frame:SetBackdropColor(0.03, 0.05, 0.08, 0.97 * alpha)
     frame:SetBackdropBorderColor(0.22, 0.18, 0.28, alpha)
-    MR_RestoreFramePos(frame, "gatheringLocPos", 860, 0)
-    frame.leftAccent = MR_LeftAccent(frame, 0.80, 0.53, 0.20)
-    frame.topAccent = MR_TopAccent(frame, 0.80, 0.53, 0.20)
+    RestoreFramePos(frame, "gatheringLocPos", 860, 0)
+    frame.leftAccent = LeftAccent(frame, 0.80, 0.53, 0.20)
+    frame.topAccent = TopAccent(frame, 0.80, 0.53, 0.20)
     if frame.leftAccent then frame.leftAccent:SetAlpha(alpha) end
     if frame.topAccent then frame.topAccent:SetAlpha(alpha) end
 
-    local titleBar = MR_TitleBar(frame, TITLE_H)
+    local titleBar = TitleBar(frame, TITLE_H)
     frame.titleBar = titleBar
     titleBar:SetBackdropColor(0, 0, 0, 0)
     titleBar:SetScript("OnDragStart", function() if not db.gatheringLocked then frame:StartMoving() end end)
@@ -424,7 +441,7 @@ local function BuildGatheringLocationsFrame(isRetry)
     titleIcon:SetTexture("Interface\\AddOns\\MidnightRoutine\\Media\\Icon")
     titleIcon:SetVertexColor(0.80, 0.53, 0.20, 1)
 
-    local closeBtn = MR_CloseButton(titleBar, function()
+    local closeBtn = CloseButton(titleBar, function()
         frame:Hide()
         if MR.db then MR.db.profile.gatheringLocOpen = false end
     end)
@@ -577,7 +594,7 @@ local function BuildGatheringLocationsFrame(isRetry)
     local minBtn = CreateFrame("Button", nil, titleBar, "BackdropTemplate")
     minBtn:SetSize(16, 16)
     minBtn:SetPoint("RIGHT", gearBtn, "LEFT", -4, 0)
-    minBtn:SetBackdrop(MR_MakeBackdrop())
+    minBtn:SetBackdrop(MakeBackdrop())
     minBtn:SetBackdropColor(0.06, 0.12, 0.22, 0.85)
     minBtn:SetBackdropBorderColor(0.15, 0.35, 0.40, 0.9)
     local minLbl = minBtn:CreateFontString(nil, "OVERLAY")
@@ -817,19 +834,19 @@ local function ResetProfessionColor(professionKey)
 end
 
 local function BuildGatheringConfigFrame()
-    local frame = CreateFrame("Frame", "MRGatheringConfigFrame", UIParent, "BackdropTemplate")
+    local frame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
     frame:SetWidth(224)
     frame:SetFrameStrata("HIGH")
     frame:SetFrameLevel(20)
     frame:SetClampedToScreen(true)
     frame:SetMovable(true)
-    frame:SetBackdrop(MR_MakeBackdrop())
+    frame:SetBackdrop(MakeBackdrop())
     frame:SetBackdropColor(0.03, 0.05, 0.02, 0.98)
     frame:SetBackdropBorderColor(0.50, 0.40, 0.16, 1)
     frame:Hide()
-    MR_TopAccent(frame, 0.80, 0.53, 0.20)
+    TopAccent(frame, 0.80, 0.53, 0.20)
 
-    local tbar = MR_TitleBar(frame, 22)
+    local tbar = TitleBar(frame, 22)
     tbar:SetBackdropColor(0.10, 0.08, 0.02, 1)
     tbar:SetScript("OnDragStart", function() frame:StartMoving() end)
     tbar:SetScript("OnDragStop", function() frame:StopMovingOrSizing() end)
@@ -837,7 +854,7 @@ local function BuildGatheringConfigFrame()
     ttitle:SetFont(FONT_HEADERS, 10, "OUTLINE")
     ttitle:SetText(L["ProfKnowledge_Config_Title"])
     ttitle:SetPoint("LEFT", tbar, "LEFT", 8, 0)
-    MR_CloseButton(tbar, function() frame:Hide() end)
+    CloseButton(tbar, function() frame:Hide() end)
     frame.body = nil
     return frame
 end
@@ -858,16 +875,16 @@ PopulateGatheringConfig = function(frame)
     local db = MR.db.profile
     local yOff, pad = -28, 8
     local cfgFs = MR.db.profile.syncWindowFontSize and (db.gatheringFontSize or 9) or 9
-    local function Gap(h) yOff = MR_OptionsGap(body, yOff, h) end
-    local function Divider() yOff = MR_OptionsDivider(body, yOff, pad) end
-    local function SecLabel(text) yOff = MR_OptionsSectionLabel(body, yOff, text, pad, cfgFs) end
+    local function Gap(h) yOff = OptionsGap(body, yOff, h) end
+    local function Divider() yOff = OptionsDivider(body, yOff, pad) end
+    local function SecLabel(text) yOff = OptionsSectionLabel(body, yOff, text, pad, cfgFs) end
     local function Check(label, getValue, setValue, r, g, b)
-        yOff = MR_OptionsCheckbox(body, yOff, label, getValue, setValue, r or 0.78, g or 0.78, b or 0.88, pad, function() PopulateGatheringConfig(frame) end, cfgFs)
+        yOff = OptionsCheckbox(body, yOff, label, getValue, setValue, r or 0.78, g or 0.78, b or 0.88, pad, function() PopulateGatheringConfig(frame) end, cfgFs)
     end
     local function Slider(label, mn, mx, st, getValue, setValue, r, g, b, disabled)
-        yOff = MR_OptionsSlider(body, yOff, label, mn, mx, st, getValue, setValue, r, g, b, pad, disabled, cfgFs)
+        yOff = OptionsSlider(body, yOff, label, mn, mx, st, getValue, setValue, r, g, b, pad, disabled, cfgFs)
     end
-    local function Btn(label, fn) yOff = MR_OptionsBtn(body, yOff, label, fn, 184, pad, cfgFs) end
+    local function Btn(label, fn) yOff = OptionsBtn(body, yOff, label, fn, 184, pad, cfgFs) end
 
     SecLabel(L["Config_Display"])
     Check(L["Config_LockPosition"], function() return db.gatheringLocked end, function(value)
@@ -915,7 +932,7 @@ PopulateGatheringConfig = function(frame)
             row:SetPoint("TOPRIGHT", body, "TOPRIGHT", -pad, yOff)
             row:SetHeight(22)
             local nameLbl
-            local swatch = MR_OptionsColorSwatch(row, cr, cg, cb, function(r, g, b)
+            local swatch = OptionsColorSwatch(row, cr, cg, cb, function(r, g, b)
                 SetProfessionColor(profession.key, r, g, b)
                 if nameLbl then nameLbl:SetTextColor(r, g, b) end
             end, function()

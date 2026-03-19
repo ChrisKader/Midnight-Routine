@@ -1,3 +1,6 @@
+local _, ns = ...
+local MR = ns.MR
+
 local SCAN_THROTTLE       = 2
 local DELVE_T8_MIN_LEVEL  = 8
 local DELVERS_BOUNTY_ITEM = 265714
